@@ -272,6 +272,7 @@
             remote_src: true
 
     - name: Install Rust
+      become_user: kali
       block:
         - name: Check if Rust installed for kali user
           ansible.builtin.stat:
