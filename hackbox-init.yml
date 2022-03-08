@@ -407,7 +407,7 @@
     - name: Install VSCode extensions
       ansible.builtin.command:
         cmd: "code --install-extension {{ item }}"
-        loop: "{{ vscode.extensions }}"
+      loop: "{{ vscode.extensions }}"
 
     - name: Checking if reboot required
       ansible.builtin.command: test -f /var/run/reboot-required
