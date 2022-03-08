@@ -196,14 +196,6 @@
       release_api_url: >-
         https://api.github.com/repos/pyenv/pyenv/releases/latest
       python_ver: 2.7.18
-    dotfiles:
-      src: /mnt/vm-share/git/dotfiles
-      dest: /home/kali
-      files:
-        - .zsh-aliases
-        - .zshrc
-        - .vimrc
-        - .p10k.zsh
     ohmyzsh:
       install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 
@@ -327,21 +319,6 @@
         name: "{{ packages.pip.install }}"
         state: latest
 
-    # - name: Put dotfiles in place (backing up old ones)
-    #   ansible.builtin.copy:
-    #     src: "{{ dotfiles.src + '/' + item }}"
-    #     dest: "{{ dotfiles.dest + '/' + item }}"
-    #     backup: true
-    #   loop: "{{ dotfiles.files }}"
-
-    - name: Make dotfiles symlinks
-      ansible.builtin.file:
-        src: "{{ dotfiles.src + '/' + item }}"
-        dest: "{{ dotfiles.dest + '/' + item }}"
-        state: link
-        force: true
-      loop: "{{ dotfiles.files }}"
-
     - name: Configure Oh-My-Zsh
       become_user: kali
       block:
@@ -365,12 +342,6 @@
           ansible.builtin.git:
             repo: https://github.com/romkatv/powerlevel10k.git
             dest: /home/kali/.oh-my-zsh/custom/themes/powerlevel10k
-
-        - name: Copy over hashcat-mode-finder plugin
-          ansible.builtin.copy:
-            src: "{{ dotfiles.src + '/hashcat-mode-finder' }}"
-            dest: "/home/kali/.oh-my-zsh/custom/plugins/"
-            remote_src: true
 
     - name: Install Meslo Nerd fonts
       ansible.builtin.uri:
