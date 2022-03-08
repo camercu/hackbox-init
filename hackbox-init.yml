@@ -376,6 +376,7 @@
                 cmd: sh -s
                 stdin: "{{ ohmyzsh_installer.content }}"
                 creates: "{{ ohmyzsh.dir }}"
+              when: not ohmyzsh.dir.stat.exists
 
         - name: Install zsh-autosuggestions plugin
           ansible.builtin.git:
