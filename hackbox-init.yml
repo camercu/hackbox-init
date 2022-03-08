@@ -268,6 +268,8 @@
         update_cache: true
 
     - name: Configure Microsoft Visual Studio Code Apt Repos
+      tags:
+        - vscode
       block:
         - name: Add Microsoft Apt Signing Key
           ansible.builtin.apt_key:
@@ -406,9 +408,12 @@
       register: font_install
 
     - name: Install VSCode extensions
+      become_user: "{{ user }}"
       ansible.builtin.command:
         cmd: "code --install-extension {{ item }}"
       loop: "{{ vscode.extensions }}"
+      tags:
+        - vscode
 
     - name: Checking if reboot required
       ansible.builtin.command: test -f /var/run/reboot-required
