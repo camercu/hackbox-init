@@ -25,8 +25,10 @@ function success {
     echo "${GREEN}[+] $@${CLEAR}"
 }
 
-# info "Ensuring VMWare Tools are installed..."
-# sudo apt update && sudo apt install -y open-vm-tools fuse3
+if lspci | grep -i vmware &>/dev/null; then
+    info "Ensuring VMWare Tools are installed..."
+    sudo apt update && sudo apt install -y open-vm-tools fuse3
+fi
 
 info "Regenerating Host SSH Keys..."
 sudo rm -v /etc/ssh/ssh_host_*
