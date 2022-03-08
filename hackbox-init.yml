@@ -20,7 +20,6 @@
           - pipx
           - pwntools
           - pyftpdlib
-          - python3-pefile
           - requests
           - unicorn # cpu emulator framework
           - updog # python http server replacement that supports ssl & file upload
@@ -148,6 +147,7 @@
           - pure-ftpd
           - python3-capstone
           - python3-dev # pwntools dependency
+          - python3-pefile
           - python3-pip
           - python3-venv
           - qemu
