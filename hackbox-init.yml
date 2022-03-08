@@ -90,6 +90,7 @@
           - dex2jar # Dalvik decompiler
           - dirb
           - docker.io
+          - docker-doc
           - dsniff # sniff network traffic for cleartext insecurities
           - enum4linux # autorecon dependency
           - exploitdb
