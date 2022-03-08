@@ -180,8 +180,8 @@
           - vagrant
           - valgrind
           - vim
-          - virtualbox
-          - virtualbox-ext-pack
+          # - virtualbox
+          # - virtualbox-ext-pack
           - whatweb # autorecon dependency, recognize web technologies/plugins used by a site
           - wine
           - wine32
