@@ -114,7 +114,7 @@
           - libbz2-dev
           - libc6:i386
           - libcapstone-dev
-          - libcapstone2
+          - libcapstone4
           - libffi-dev # pwntools dependency
           - libreadline-dev
           - libsqlite3-dev
@@ -144,6 +144,7 @@
           - python3-dev # pwntools dependency
           - python3-pip
           - python3-venv
+          - python3-capstone
           - qemu
           - qemu-user
           - radare2
@@ -227,7 +228,7 @@
         - vscode-icons-team.vscode-icons
         - vscodevim.vim
         - yzhang.markdown-all-in-one
-        - zhuangtongfa.material-theme
+        - zhuangtongfa.material-theme  # one dark pro theme
         - lfs.vscode-emacs-friendly
 
   tasks: # ******************************************************************
