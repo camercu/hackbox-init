@@ -144,6 +144,7 @@
           - libwine
           - libwine:i386
           - masscan
+          - meson # awesome build system, sits on top of ninja-build
           - metasploit-framework
           - mingw-w64
           - mitmproxy
@@ -239,6 +240,7 @@
         - infosec-intern.snort
         - lfs.vscode-emacs-friendly
         - matklad.rust-analyzer
+        - mesonbuild.mesonbuild  # meson (build) language support
         - ms-azuretools.vscode-docker
         - ms-python.python
         - ms-python.vscode-pylance
