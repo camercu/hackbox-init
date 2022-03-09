@@ -15,38 +15,38 @@
         install:
           - ansible-lint
           - autoflake
-          - bandit
-          - beautifulsoup4
-          - black
-          - bleach
+          - bandit  # check for CVEs in dependencies
+          - beautifulsoup4  # web scraping
+          - black  # autoformat code nicely
+          - bleach  # sanitize user input
           - coverage[toml]
-          - flake8
+          - flake8  # code linter
           - flake8-gl-codeclimate
           - html5lib
           - httpie  # better curl alternative
-          - isort
+          - isort  # sort imports
           - keystone-engine # assembler framework
-          - paramiko
+          - paramiko  # ssh communication
           - pip
-          - pip-tools
-          - pipx
-          - pre-commit
-          - pwntools
+          - pip-tools  # version locking with pip
+          - pipx  # get CLI tools from pip
+          - pre-commit  # git pre-commit hooks
+          - pwntools  # binary exploitation kit
           - pyftpdlib
-          - pytest
+          - pytest  # unit testing
           - python-dateutil
-          - requests
-          - safety
-          - sqlalchemy
-          - tabulate
+          - requests  # http requests
+          - safety  # check code for common vulns
+          - sqlalchemy  # SQL ORM
+          - tabulate  # pretty text tables
           - unicorn # cpu emulator framework
           - updog # python http server replacement that supports ssl & file upload
           - yamllint
 
       apt:
-        pre_install:
+        pre_install: # required to add new apt repos/signing keys
           - apt-transport-https
-          - curl
+          - curl # also an autorecon dependency
           - gnupg2
           - gpg
           - software-properties-common
@@ -90,7 +90,6 @@
           # - waybackurls
           # - zdns
           - apktool # Android APK RE tool
-          - apt-transport-https
           - bettercap
           - binwalk
           - build-essential
@@ -104,7 +103,6 @@
           - clang-tools
           - code # VSCode
           - crackmapexec
-          - curl # autorecon dependency
           - default-jre # to run Ghidra
           - default-mysql-client
           - dex2jar # Dalvik decompiler
