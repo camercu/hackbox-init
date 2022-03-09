@@ -82,6 +82,7 @@
           # - subgen
           # - subjack
           # - urlprobe
+          # - virtualbox-ext-pack  # requires manually accepting license agreement
           # - waybackurls
           # - zdns
           - apktool # Android APK RE tool
@@ -104,8 +105,8 @@
           - default-mysql-client
           - dex2jar # Dalvik decompiler
           - dirb
-          - docker.io
           - docker-doc
+          - docker.io
           - dsniff # sniff network traffic for cleartext insecurities
           - enum4linux # autorecon dependency
           - exploitdb
@@ -198,7 +199,6 @@
           - valgrind
           - vim
           - virtualbox
-          # - virtualbox-ext-pack
           - whatweb # autorecon dependency, recognize web technologies/plugins used by a site
           - wine
           - wine32
