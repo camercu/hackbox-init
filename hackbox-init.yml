@@ -113,15 +113,16 @@
           - enum4linux # autorecon dependency
           - exploitdb
           - eyewitness # website snapshotting tool
-          - fd-find
+          - fd-find  # blazing-fast replacement for find command (in Rust)
           - feroxbuster # autorecon dependency
           - ffuf # autorecon dependency, web fuzzer
           - flameshot # screenshot tool
           - fonts-wine
           - freerdp2-x11 # xfreerdp
           - fzf # dependency for custom hashcat mode finder
-          - gcc-multilib
-          - gdb-peda
+          - gcc-multilib  # cross-compiling toolchains
+          - gdb  # GNU Debugger
+          - gdb-peda  # more friendly gdb display/commands
           - ghidra
           - ghidra-data
           - git
@@ -166,20 +167,22 @@
           - proxify
           - proxychains
           - pure-ftpd
-          - python3-capstone
+          - python3-capstone  # multi-arch disassembly framework
           - python3-dev # pwntools dependency
-          - python3-pefile
+          - python3-pefile  # Windows PE (exe) parser
           - python3-pip
+          - python3-scapy  # custom packet crafting
+          - python3-setuptools  # for building/installing python packages
           - python3-venv
           - qemu
           - qemu-user
-          - radare2
-          - radare2-cutter
-          - rinetd
-          - ripgrep
-          - rlwrap
-          - ropper
-          - rsync
+          - radare2 # RE toolchain (disassembly, debugging, patching, etc.)
+          - radare2-cutter  # GUI wrapper around radare2
+          - rinetd  # user-mode port redirection utility
+          - ripgrep  # blazing-fast replacement for grep (written in Rust)
+          - rlwrap  # add line wrapping to netcat shells
+          - ropper  # tools for building ROP chains
+          - rsync  # faster way to scp files, only syncing changes
           - seclists # autorecon dependency
           - sipvicious # autorecon dependency, used to audit SIP-based VoIP systems
           - smbclient # autorecon dependency
