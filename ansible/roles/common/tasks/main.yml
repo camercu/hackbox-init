@@ -260,6 +260,8 @@
         chdir: "{{ dotfiles.dir }}"
         cmd: "./install.sh"
         creates: "{{ homedir }}/.gitconfig-aliases"
+      register: df_install
+      changed_when: "'Symlink' in df_install.stdout"
 
 - name: Checking if reboot required
   ansible.builtin.command: test -f /var/run/reboot-required
