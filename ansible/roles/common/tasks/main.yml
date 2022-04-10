@@ -12,7 +12,7 @@
     - name: Find existing ssh keys
       ansible.builtin.find:
         paths: "/etc/ssh"
-        patterns: "/etc/ssh/ssh_host_*"
+        patterns: "ssh_host_*"
       register: sshkeys
     - name: Delete old ssh keys
       ansible.builtin.file:
