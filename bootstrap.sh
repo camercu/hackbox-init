@@ -34,7 +34,8 @@ if [[ "$UID" != 0 ]]; then
     exit $?
 fi
 
-if lspci | grep -i vmware &>/dev/null; then
+in_vmware=$(lspci | grep -i vmware &>/dev/null && echo true || echo false )
+if [[ $in_vmware == true ]]; then
     info "Ensuring VMWare Tools are installed..."
     apt update && apt install -y open-vm-tools fuse3
 
@@ -56,5 +57,11 @@ python3 -m pip install ansible argcomplete
 
 info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
+
+if [[ $in_vmware == true && -d /mnt/share/.dotfiles ]]; then
+    info "Swapping out dotfile dir for shared copy..."
+    rm -rf /home/kali/.dotfiles
+    ln -s /mnt/share/.dotfiles /home/kali/.dotfiles
+fi
 
 success "Done!"
