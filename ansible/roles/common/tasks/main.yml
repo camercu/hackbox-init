@@ -5,9 +5,13 @@
   ansible.builtin.stat:
     path: "{{ sshkey_touchfile }}"
   register: sshtf
+  tags:
+    - ssh
 
 - name: Regenerate host ssh keys
   when: not sshtf.stat.exists
+  tags:
+    - ssh
   block:
     - name: Find existing ssh keys
       ansible.builtin.find:
@@ -39,17 +43,25 @@
     update_cache: true
     autoclean: true
     autoremove: true
+  tags:
+    - apt
+    - update
 
 - name: Include Apt deb-src repos
   ansible.builtin.apt_repository:
     repo: deb-src http://http.kali.org/kali kali-rolling main contrib non-free
     state: present
+  tags:
+    - apt
 
 - name: Install Apt tools for adding repos
   ansible.builtin.apt:
     name: "{{ apt.pre_install }}"
     state: latest
     update_cache: false
+  tags:
+    - apt
+    - update
 
 - name: Configure Microsoft Visual Studio Code Apt Repos
   tags:
@@ -70,11 +82,15 @@
   ansible.builtin.command: dpkg --print-foreign-architectures
   register: dpkg_architectures
   changed_when: false # never shows as creating a change
+  tags:
+    - apt
 # - debug:
 #     var: dpkg_architectures.stdout
 - name: Add i386 architecture to dpkg
   ansible.builtin.command: dpkg --add-architecture i386
   when: "'i386' not in dpkg_architectures.stdout"
+  tags:
+    - apt
 
 - name: "Install apt packages: {{ apt.install | join(', ') }}"
   ansible.builtin.apt:
@@ -86,6 +102,9 @@
     - update
 
 - name: Install latest release of Golang
+  tags:
+    - go
+    - golang
   block:
     - name: Find latest release version of Go
       ansible.builtin.uri:
@@ -105,6 +124,8 @@
 
 - name: Install Rust
   become_user: "{{ user }}"
+  tags:
+    - rust
   block:
     - name: "Check if Rust installed for {{ user }} user"
       ansible.builtin.stat:
@@ -125,6 +146,8 @@
 # Pyenv lets us have python2 install alongside the default system python3
 - name: "Install & configure pyenv for {{ user }} user"
   become_user: "{{ user }}"
+  tags:
+    - pyenv
   block:
     - name: Find latest release version of pyenv
       ansible.builtin.uri:
@@ -153,9 +176,15 @@
   ansible.builtin.pip:
     name: "{{ pip.install }}"
     state: latest
+  tags:
+    - pip
+    - update
 
 - name: Configure Oh-My-Zsh
   become_user: "{{ user }}"
+  tags:
+    - zsh
+    - ohmyzsh
   block:
     - name: "Installing Oh-My-Zsh for {{ user }} user"
       block:
@@ -200,6 +229,9 @@
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
   register: font_install
+  tags:
+    - zsh
+    - fonts
 
 - name: Install VSCode extensions
   become_user: "{{ user }}"
