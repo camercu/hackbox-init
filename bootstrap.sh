@@ -60,8 +60,8 @@ ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpre
 
 if [[ $in_vmware == true && -d /mnt/share/.dotfiles ]]; then
     info "Swapping out dotfile dir for shared copy..."
-    rm -rf /home/kali/.dotfiles
-    ln -s /mnt/share/.dotfiles /home/kali/.dotfiles
+    [[ -d /home/kali/.dotfiles && ! -L /home/kali/.dotfiles ]] && rm -rf /home/kali/.dotfiles
+    ln -sf /mnt/share/.dotfiles /home/kali/.dotfiles
 fi
 
 success "Done!"
