@@ -8,7 +8,7 @@ firefox:
 sshkey_touchfile: /etc/ssh/sshkeys-regenerated
 
 dotfiles:
-  dir: "{{ homedir }}./dotfiles"
+  dir: "{{ homedir }}/.dotfiles"
   repo: "https://github.com/camercu/dotfiles"
 
 pip:
