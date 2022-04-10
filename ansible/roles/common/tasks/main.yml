@@ -219,6 +219,10 @@
       ansible.builtin.git:
         repo: "{{ dotfiles.repo }}"
         dest: "{{ dotfiles.dir }}"
+    - name: Set dotfiles installer as executable
+      ansible.builtin.file:
+        path: "{{ dotfiles.dir }}/install.sh"
+        mode: 0750
     - name: Run dotfiles installer
       ansible.builtin.command:
         chdir: "{{ dotfiles.dir }}"
