@@ -1,6 +1,7 @@
 ---
 pwndbg:
   repo: https://github.com/pwndbg/pwndbg
+  dir: /opt/pwndbg
 
 pip:
   install:

@@ -18,3 +18,25 @@
     - pip
     - update
     - re
+
+- name: Install pwndbg
+  become_user: "{{ user }}"
+  tags:
+    - re
+    - pwndbg
+  block:
+    - name: Download pwndbg
+      ansible.builtin.git:
+        repo: "{{ pwndbg.repo }}"
+        dest: "{{ pwndbg.dir }}"
+    - name: Check if pwndbg already in use
+      ansible.builtin.command:
+        cmd: grep pwndbg ~/.gdbinit
+      register: pwndbg_inuse
+      changed_when: false
+      failed_when: false
+    - name: Install pwndbg
+      ansible.builtin.command:
+        chdir: "{{ pwndbg.dir }}"
+        cmd: "./install.sh"
+      when: "'pwndbg' in pwndbg_inuse.stdout"
