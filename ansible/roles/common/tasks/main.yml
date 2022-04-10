@@ -17,6 +17,7 @@
     - name: Delete old ssh keys
       ansible.builtin.file:
         path: "{{ item.path }}"
+        state: absent
       loop: "{{ sshkeys.files }}"
     - name: Generate new host ssh keys
       ansible.builtin.command:
