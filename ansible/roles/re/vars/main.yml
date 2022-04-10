@@ -1,0 +1,25 @@
+---
+pwndbg:
+  repo: https://github.com/pwndbg/pwndbg
+
+pip:
+  install:
+    - keystone-engine # assembler framework
+    - pwntools # binary exploitation kit
+    - unicorn # cpu emulator framework
+
+apt:
+  install:
+    - apktool # Android APK RE tool
+    - capstone-tool # cmdline tool for disassembly
+    - default-jdk # to run Ghidra
+    - dex2jar # Dalvik decompiler
+    - ghidra # Disassembler/decompiler/debugger
+    - ghidra-data # databases to improve ghidra
+    - jd-gui # java decompiler
+    - libcapstone4 # dev libs for disassembly
+    - python3-capstone # multi-arch disassembly framework
+    - qemu-system # system-level emulation
+    - qemu-user # user-mode emulation
+    - radare2-cutter # GUI wrapper around radare2
+    - ropper # tools for building ROP chains

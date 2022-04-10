@@ -1,0 +1,227 @@
+---
+# to only run this once per host, we touch a file when we are done.
+# if the file exists, don't do regeneration routine
+- name: Check for ssh-key touchfile
+  ansible.builtin.stat:
+    path: "{{ sshkey_touchfile }}"
+  register: sshtf
+
+- name: Regenerate host ssh keys
+  when: not sshtf.stat.exists
+  block:
+    - name: Find existing ssh keys
+      ansible.builtin.find:
+        paths: "/etc/ssh"
+        patterns: "/etc/ssh/ssh_host_*"
+      register: sshkeys
+    - name: Delete old ssh keys
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+      loop: sshkeys.files
+    - name: Generate new host ssh keys
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure openssh-server
+        creates: /etc/ssh/ssh_host_rsa_key
+    - name: Restart ssh server
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+- name: Apt full-upgrade
+  ansible.builtin.apt:
+    upgrade: full
+    update_cache: true
+    autoclean: true
+    autoremove: true
+
+- name: Include Apt deb-src repos
+  ansible.builtin.apt_repository:
+    repo: deb-src http://http.kali.org/kali kali-rolling main contrib non-free
+    state: present
+
+- name: Install Apt tools for adding repos
+  ansible.builtin.apt:
+    name: "{{ apt.pre_install }}"
+    state: latest
+    update_cache: false
+
+- name: Configure Microsoft Visual Studio Code Apt Repos
+  tags:
+    - vscode
+  block:
+    - name: Add Microsoft Apt Signing Key
+      ansible.builtin.apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
+        state: present
+    - name: Add VSCode Apt Repo
+      ansible.builtin.apt_repository:
+        repo: deb https://packages.microsoft.com/repos/vscode stable main
+        filename: vscode
+        state: present
+
+- name: Get foreign dpkg architectures
+  ansible.builtin.command: dpkg --print-foreign-architectures
+  register: dpkg_architectures
+  changed_when: false # never shows as creating a change
+# - debug:
+#     var: dpkg_architectures.stdout
+- name: Add i386 architecture to dpkg
+  ansible.builtin.command: dpkg --add-architecture i386
+  when: "'i386' not in dpkg_architectures.stdout"
+
+- name: "Install apt packages: {{ apt.install | join(', ') }}"
+  ansible.builtin.apt:
+    name: "{{ apt.install }}"
+    state: latest
+    update_cache: true
+  tags:
+    - apt
+    - update
+
+- name: Install latest release of Golang
+  block:
+    - name: Find latest release version of Go
+      ansible.builtin.uri:
+        method: GET
+        url: "{{ go.version_url }}"
+        follow_redirects: safe
+        body_format: raw
+        return_content: true
+      register: latest_go_version
+    # - debug:
+    #     var: latest_go_version['content']
+    - name: Download & Install latest version of Go
+      ansible.builtin.unarchive:
+        src: "https://golang.org/dl/{{ latest_go_version['content'] }}.linux-amd64.tar.gz"
+        dest: /usr/local
+        remote_src: true
+
+- name: Install Rust
+  become_user: "{{ user }}"
+  block:
+    - name: "Check if Rust installed for {{ user }} user"
+      ansible.builtin.stat:
+        path: "{{ homedir }}/.cargo"
+      register: cargo_dir
+    - name: Fetch rustup
+      ansible.builtin.uri:
+        url: https://sh.rustup.rs
+        return_content: yes
+      when: not cargo_dir.stat.exists
+      register: rustup_installer
+    - name: Run rustup installer
+      ansible.builtin.command:
+        cmd: sh -s -- -y
+        stdin: "{{ rustup_installer.content }}"
+      when: not cargo_dir.stat.exists
+
+# Pyenv lets us have python2 install alongside the default system python3
+- name: "Install & configure pyenv for {{ user }} user"
+  become_user: "{{ user }}"
+  block:
+    - name: Find latest release version of pyenv
+      ansible.builtin.uri:
+        method: GET
+        url: "{{ pyenv.release_api_url }}"
+        follow_redirects: safe
+        body_format: json
+      register: pyenv_release_info
+    - name: Download pyenv
+      ansible.builtin.git:
+        repo: "{{ pyenv.repo_url }}"
+        dest: "{{ pyenv.root }}"
+        depth: 1
+        version: "{{ pyenv_release_info['json']['tag_name'] }}"
+    - name: Install pyenv python version
+      ansible.builtin.shell:
+        cmd: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init -)"
+          CFLAGS='-O2' pyenv install -s {{ pyenv.python_ver }}
+        creates: "{{ homedir }}/.pyenv/versions/{{ pyenv.python_ver }}"
+
+- name: "Install python packages: {{ pip.install | join(', ') }}"
+  become_user: "{{ user }}"
+  ansible.builtin.pip:
+    name: "{{ pip.install }}"
+    state: latest
+
+- name: Configure Oh-My-Zsh
+  become_user: "{{ user }}"
+  block:
+    - name: "Installing Oh-My-Zsh for {{ user }} user"
+      block:
+        - name: "Check if Oh-My-Zsh installed for {{ user }} user"
+          ansible.builtin.stat:
+            path: "{{ ohmyzsh.dir }}"
+          register: ohmyzsh_dir
+        - name: Fetch oh-my-zsh
+          ansible.builtin.uri:
+            url: "{{ ohmyzsh.install_url }}"
+            return_content: yes
+          when: not ohmyzsh_dir.stat.exists
+          register: ohmyzsh_installer
+        - name: Run oh-my-zsh installer
+          ansible.builtin.command:
+            cmd: sh -s
+            stdin: "{{ ohmyzsh_installer.content }}"
+            creates: "{{ ohmyzsh.dir }}"
+          when: not ohmyzsh_dir.stat.exists
+
+    - name: Install zsh-autosuggestions plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: "{{ homedir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    - name: Install zsh-syntax-highlighting plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting
+        dest: "{{ homedir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    - name: Install Powerlevel10k theme
+      ansible.builtin.git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: "{{ homedir }}/.oh-my-zsh/custom/themes/powerlevel10k"
+
+- name: Install Meslo Nerd fonts
+  ansible.builtin.uri:
+    url: "{{ item }}"
+    dest: /usr/local/share/fonts/
+    creates: /usr/local/share/fonts/MesloLGS%20NF%20Regular.ttf
+  loop:
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+  register: font_install
+
+- name: Install VSCode extensions
+  become_user: "{{ user }}"
+  ansible.builtin.command:
+    cmd: "code --install-extension {{ item }}"
+    creates: "{{ homedir }}/.vscode/extensions/{{ item }}"
+  loop: "{{ vscode.extensions }}"
+  tags:
+    - vscode
+
+- name: Install dotfiles
+  become_user: "{{ user }}"
+  tags:
+    - dotfiles
+  block:
+    - name: Download dotfiles repo
+      ansible.builtin.git:
+        repo: "{{ dotfiles.repo }}"
+        dest: "{{ dotfiles.dir }}"
+    - name: Run dotfiles installer
+      ansible.builtin.command:
+        chdir: "{{ dotfiles.dir }}"
+        cmd: "./install.sh"
+        creates: "{{ homedir }}/.gitconfig-aliases"
+
+- name: Checking if reboot required
+  ansible.builtin.command: test -f /var/run/reboot-required
+  failed_when: False
+  register: reboot_required
+  changed_when: reboot_required.rc == 0
+  notify: Rebooting machine

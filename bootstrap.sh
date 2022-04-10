@@ -3,6 +3,8 @@
 # exit when any command fails
 set -e
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 YELLOW=$(tput setaf 3)
@@ -25,23 +27,32 @@ function success {
     echo "${GREEN}[+] $@${CLEAR}"
 }
 
-if lspci | grep -i vmware &>/dev/null; then
-    info "Ensuring VMWare Tools are installed..."
-    sudo apt update && sudo apt install -y open-vm-tools fuse3
+if [[ "$UID" != 0 ]]; then
+    error "This script must be run as root!"
+    info "Re-trying with sudo..."
+    sudo $@
+    exit $?
 fi
 
-info "Regenerating Host SSH Keys..."
-sudo rm -v /etc/ssh/ssh_host_*
-sudo dpkg-reconfigure openssh-server
-sudo systemctl restart ssh
+if lspci | grep -i vmware &>/dev/null; then
+    info "Ensuring VMWare Tools are installed..."
+    apt update && apt install -y open-vm-tools fuse3
+
+    info "Ensuring shared folder is mounted..."
+    if ! grep -f '.host:/vm-share' /etc/fstab &>/dev/null; then
+        cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
+        mv /tmp/fstab.new /etc/fstab
+        mount -a
+    fi
+fi
 
 info "Installing prerequisites for Ansible..."
-sudo apt update && sudo apt install -y python3 python3-pip
+apt update && apt install -y python3 python3-pip
 
 info "Installing Ansible..."
-sudo python3 -m pip install ansible argcomplete
+python3 -m pip install ansible argcomplete
 
 info "Running Ansible script..."
-sudo ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" hackbox-init.yml
+ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
 
 success "Done!"

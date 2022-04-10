@@ -1,0 +1,13 @@
+---
+# - name: Restart services
+#   ansible.builtin.systemd:
+#     name: "{{ item }}"
+#     state: restarted
+#   loop: "{{ services.enable }}"
+
+- name: Refresh font cache
+  ansible.builtin.command: fc-cache -fv
+  when: font_install.changed
+
+- name: Rebooting machine
+  ansible.builtin.reboot:

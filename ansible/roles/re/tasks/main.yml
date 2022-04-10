@@ -1,0 +1,20 @@
+---
+- name: "Install RE apt packages: {{ apt.install | join(', ') }}"
+  ansible.builtin.apt:
+    name: "{{ apt.install }}"
+    state: latest
+    update_cache: true
+  tags:
+    - apt
+    - update
+    - re
+
+- name: "Install RE python packages: {{ pip.install | join(', ') }}"
+  become_user: "{{ user }}"
+  ansible.builtin.pip:
+    name: "{{ pip.install }}"
+    state: latest
+  tags:
+    - pip
+    - update
+    - re

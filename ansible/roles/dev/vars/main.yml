@@ -1,0 +1,32 @@
+---
+pip:
+  install:
+    # - sqlalchemy # SQL ORM
+    - black # autoformat code nicely
+    - pytest # unit testing
+    - ansible-lint # lint Ansible (yaml) files
+    - autoflake # remove unused imports/variables
+    - bandit # check for CVEs in dependencies
+    - beautifulsoup4 # web scraping
+    - bleach # sanitize user input
+    - coverage[toml]
+    - flake8 # code linter
+    - html5lib # HTML parser, used in conjunction with beautifulsoup4
+    - isort # sort imports
+    - pip-tools # version locking with pip
+    - pre-commit # git pre-commit hooks
+    - safety # check code for common vulns
+    - yamllint # lint YAML files
+
+apt:
+  install:
+    # - virtualbox-ext-pack  # requires manually accepting license agreement
+    - clang # featureful LLVM compiler
+    - clang-format # autoformat C/C++
+    - clang-tidy # C/C++ linter
+    - clang-tools # compiler tools
+    - meson # awesome build system, sits on top of ninja-build
+    - vagrant # manage headless VMs
+    - valgrind # memory-leak checker
+    - virtualbox # virtual machines
+    - packer # build your own machine images

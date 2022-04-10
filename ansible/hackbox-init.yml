@@ -1,0 +1,14 @@
+---
+# Ansible Playbook to install all desired tools on a Kali hack box
+# To run:
+# sudo ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" hackbox-init.yml
+
+- name: Initialize Kali Hack-Box
+  hosts: all
+  become: true
+  gather_facts: false
+  roles:
+    - common
+    - pentest
+    # - dev
+    # - re
