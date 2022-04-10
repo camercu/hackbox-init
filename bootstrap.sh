@@ -39,10 +39,11 @@ if lspci | grep -i vmware &>/dev/null; then
     apt update && apt install -y open-vm-tools fuse3
 
     info "Ensuring shared folder is mounted..."
-    if ! grep -f '.host:/vm-share' /etc/fstab &>/dev/null; then
+    if ! grep -F '.host:/vm-share' /etc/fstab &>/dev/null; then
         cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
         mv /tmp/fstab.new /etc/fstab
-        mkdir -p "$(awk '{print $2}' "$HERE/fstab")"
+        mountpt="$(awk '{print $2}' "$HERE/fstab")"
+        mkdir -p "$mountpt"
         mount -a
     fi
 fi
