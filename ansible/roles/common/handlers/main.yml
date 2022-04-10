@@ -11,4 +11,4 @@
 
 - name: Rebooting machine
   ansible.builtin.reboot:
-  when: "ansible_facts.virtualization_role != 'guest'"
+  when: "ansible_connection != 'local'"

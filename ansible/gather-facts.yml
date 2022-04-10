@@ -7,3 +7,6 @@
     - name: Print all available facts
       ansible.builtin.debug:
         var: ansible_facts
+    - name: Print connection type
+      ansible.builtin.debug:
+        var: ansible_connection
