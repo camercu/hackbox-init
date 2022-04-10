@@ -27,6 +27,11 @@
       ansible.builtin.service:
         name: ssh
         state: restarted
+    - name: Create ssh-key touchfile
+      ansible.builtin.file:
+        path: "{{ sshkey_touchfile }}"
+        state: touch
+        mode: 0640
 
 - name: Apt full-upgrade
   ansible.builtin.apt:
