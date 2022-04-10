@@ -33,13 +33,13 @@ apt:
   install:
     - code # VSCode
     - docker-doc # docker documentation
+    - docker.io # docker containers
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
     - fzf # dependency for custom hashcat mode finder
     - gdb # GNU Debugger
     - gdb-peda # more friendly gdb display/commands
     - git # version control
-    - docker.io # docker containers
     - jq # JSON query tool for cli
     - ncat # better netcat, with ssl support
     - nmap # autorecon dependency
