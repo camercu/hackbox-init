@@ -237,7 +237,7 @@
   become_user: "{{ user }}"
   ansible.builtin.command:
     cmd: "code --install-extension {{ item }}"
-    creates: "{{ homedir }}/.vscode/extensions/{{ item }}"
+    creates: "{{ homedir }}/.vscode/extensions/{{ item }}-*"
   loop: "{{ vscode.extensions }}"
   tags:
     - vscode
