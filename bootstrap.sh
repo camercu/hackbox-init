@@ -42,6 +42,7 @@ if lspci | grep -i vmware &>/dev/null; then
     if ! grep -f '.host:/vm-share' /etc/fstab &>/dev/null; then
         cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
         mv /tmp/fstab.new /etc/fstab
+        mkdir -p "$(awk '{print $2}')"
         mount -a
     fi
 fi
