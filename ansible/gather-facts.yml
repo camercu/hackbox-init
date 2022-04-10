@@ -1,9 +1,10 @@
 ---
-hosts: all
-become: true
-gather_facts: true
-tasks:
-  - name: Show all facts
-    ansible.builtin.debug:
-      vars:
-        - "{{ ansible_facts }}"
+- name: Debug full machine facts
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Show all facts
+      ansible.builtin.debug:
+        vars:
+          - "{{ ansible_facts }}"
