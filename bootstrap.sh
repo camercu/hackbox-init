@@ -40,7 +40,9 @@ if [[ $in_vmware == true ]]; then
     apt update && apt install -y open-vm-tools fuse3
 
     info "Ensuring shared folder is mounted..."
-    if ! grep -F '.host:/vm-share' /etc/fstab &>/dev/null; then
+    host_dir="$(awk '{print $1}' $HERE/fstab)"
+    echo "$host_dir"
+    if ! grep -F "$host_dir" /etc/fstab &>/dev/null; then
         cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
         mv /tmp/fstab.new /etc/fstab
         mountpt="$(awk '{print $2}' "$HERE/fstab")"
