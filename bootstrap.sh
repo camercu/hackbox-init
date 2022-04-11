@@ -41,7 +41,6 @@ if [[ $in_vmware == true ]]; then
 
     info "Ensuring shared folder is mounted..."
     host_dir="$(awk '{print $1}' $HERE/fstab)"
-    echo "$host_dir"
     if ! grep -F "$host_dir" /etc/fstab &>/dev/null; then
         cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
         mv /tmp/fstab.new /etc/fstab
