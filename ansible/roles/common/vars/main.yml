@@ -25,12 +25,13 @@ pip:
 apt:
   pre_install: # required to add new apt repos/signing keys
     - apt-transport-https
-    - curl # also an autorecon dependency
+    - curl # also an autorecon and pyenv dependency
     - gnupg2
     - gpg
     - software-properties-common
 
   install:
+    - build-essential # pyenv dependency
     - code # VSCode
     - docker-doc # docker documentation
     - docker.io # docker containers
@@ -41,6 +42,17 @@ apt:
     - gdb-peda # more friendly gdb display/commands
     - git # version control
     - jq # JSON query tool for cli
+    - libbz2-dev # pyenv dependency
+    - libffi-dev # pyenv dependency
+    - liblzma-dev # pyenv dependency
+    - libncursesw5-dev # pyenv dependency
+    - libreadline-dev # pyenv dependency
+    - libsqlite3-dev # pyenv dependency
+    - libssl-dev # pyenv dependency
+    - libxml2-dev # pyenv dependency
+    - libxmlsec1-dev # pyenv dependency
+    - llvm # pyenv dependency
+    - make # pyenv dependency
     - ncat # better netcat, with ssl support
     - nmap # autorecon dependency
     - openresolv # required for wireguard
@@ -56,12 +68,16 @@ apt:
     - rsync # faster way to scp files, only syncing changes
     - tcpdump # command line packet capture
     - terminator # best terminal emulator
+    - tk-dev # pyenv dependency
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
     - vim # best CLI text editor
+    - wget # pyenv dependency
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
     - xclip # X-clipboard commandline tool
+    - xz-utils # pyenv dependency
+    - zlib1g-dev # pyenv dependency
     - zsh # better shell
 
 go:
