@@ -65,4 +65,10 @@ if [[ $in_vmware == true && -d /mnt/share/.dotfiles ]]; then
     ln -sf /mnt/share/.dotfiles /home/kali/.dotfiles
 fi
 
+if [[ $in_vmware == true && -d /mnt/share/hackbox-init ]]; then
+    info "Swapping out hackbox-init dir for shared copy..."
+    [[ -d /home/kali/hackbox-init && ! -L /home/kali/hackbox-init ]] && rm -rf /home/kali/hackbox-init
+    ln -sf /mnt/share/hackbox-init /home/kali/hackbox-init
+fi
+
 success "Done!"
