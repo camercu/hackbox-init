@@ -88,7 +88,7 @@ pyenv:
   repo_url: "https://github.com/pyenv/pyenv"
   release_api_url: >-
     https://api.github.com/repos/pyenv/pyenv/releases/latest
-  python_ver: 2.7.18
+  python_ver: 2.7.18 # some old tools need python2 to work
 
 ohmyzsh:
   install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh

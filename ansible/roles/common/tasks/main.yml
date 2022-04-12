@@ -1,6 +1,6 @@
 ---
-# to only run this once per host, we touch a file when we are done.
-# if the file exists, don't do regeneration routine
+# To only regenerate ssh keys once per host, we touch a file when done.
+# If the file exists, don't do regeneration routine
 - name: Check for ssh-key touchfile
   ansible.builtin.stat:
     path: "{{ sshkey_touchfile }}"
@@ -101,6 +101,25 @@
     - apt
     - update
 
+- name: Install dotfiles
+  become_user: "{{ user }}"
+  tags:
+    - dotfiles
+  block:
+    - name: Download dotfiles repo
+      ansible.builtin.git:
+        repo: "{{ dotfiles.repo }}"
+        dest: "{{ dotfiles.dir }}"
+    - name: Set dotfiles installer as executable
+      ansible.builtin.file:
+        path: "{{ dotfiles.dir }}/install.sh"
+        mode: 0750
+    - name: Run dotfiles installer
+      ansible.builtin.command:
+        chdir: "{{ dotfiles.dir }}"
+        cmd: "./install.sh"
+        creates: "{{ homedir }}/.gitconfig-aliases"
+
 - name: Install latest release of Golang
   tags:
     - go
@@ -167,9 +186,29 @@
         cmd: |
           export PYENV_ROOT="$HOME/.pyenv"
           export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           eval "$(pyenv init -)"
           CFLAGS='-O2' pyenv install -s {{ pyenv.python_ver }}
         creates: "{{ homedir }}/.pyenv/versions/{{ pyenv.python_ver }}"
+    - name: Validate pyenv configured in .zshrc
+      ansible.builtin.lineinfile:
+        path: "{{ homedir }}/.zshrc"
+        line: "{{ item }}"
+        state: present
+      loop:
+        - export PYENV_ROOT="$HOME/.pyenv"
+        - export PATH="$PYENV_ROOT/bin:$PATH"
+        - eval "$(pyenv init --path)"
+        - eval "$(pyenv init -)"
+    - name: Validate pyenv configured in .profile
+      ansible.builtin.lineinfile:
+        path: "{{ homedir }}/.profile"
+        line: "{{ item }}"
+        state: present
+      loop:
+        - export PYENV_ROOT="$HOME/.pyenv"
+        - export PATH="$PYENV_ROOT/bin:$PATH"
+        - eval "$(pyenv init --path)"
 
 - name: "Install python packages: {{ pip.install | join(', ') }}"
   become_user: "{{ user }}"
@@ -241,25 +280,6 @@
   loop: "{{ vscode.extensions }}"
   tags:
     - vscode
-
-- name: Install dotfiles
-  become_user: "{{ user }}"
-  tags:
-    - dotfiles
-  block:
-    - name: Download dotfiles repo
-      ansible.builtin.git:
-        repo: "{{ dotfiles.repo }}"
-        dest: "{{ dotfiles.dir }}"
-    - name: Set dotfiles installer as executable
-      ansible.builtin.file:
-        path: "{{ dotfiles.dir }}/install.sh"
-        mode: 0750
-    - name: Run dotfiles installer
-      ansible.builtin.command:
-        chdir: "{{ dotfiles.dir }}"
-        cmd: "./install.sh"
-        creates: "{{ homedir }}/.gitconfig-aliases"
 
 - name: Checking if reboot required
   ansible.builtin.command: test -f /var/run/reboot-required
