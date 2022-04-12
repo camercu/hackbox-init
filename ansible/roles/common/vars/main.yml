@@ -26,9 +26,9 @@ apt:
   pre_install: # required to add new apt repos/signing keys
     - apt-transport-https
     - curl # also an autorecon and pyenv dependency
-    - gnupg2
-    - gpg
-    - software-properties-common
+    - gnupg2 # free PGP replacement
+    - gpg # free PGP replacement
+    - software-properties-common # repo manager
 
   install:
     - build-essential # pyenv dependency
