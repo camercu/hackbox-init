@@ -24,7 +24,7 @@ pip:
 
 apt:
   pre_install: # required to add new apt repos/signing keys
-    - apt-transport-https
+    - apt-transport-https # https support for apt
     - curl # also an autorecon and pyenv dependency
     - gnupg2 # free PGP replacement
     - gpg # free PGP replacement
