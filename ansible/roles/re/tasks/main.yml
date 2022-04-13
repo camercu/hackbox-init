@@ -35,12 +35,12 @@
       register: pwndbg_inuse
       changed_when: false
       failed_when: false
-    - name: Set dotfiles installer as executable
+    - name: Set pwndbg installer as executable
       ansible.builtin.file:
-        path: "{{ pwndbg.dir }}/install.sh"
+        path: "{{ pwndbg.dir }}/setup.sh"
         mode: 0755
     - name: Install pwndbg
       ansible.builtin.command:
         chdir: "{{ pwndbg.dir }}"
-        cmd: "./install.sh"
-      when: "'pwndbg' in pwndbg_inuse.stdout"
+        cmd: "./setup.sh"
+      when: "'pwndbg' not in pwndbg_inuse.stdout"

@@ -13,6 +13,7 @@ dotfiles:
 
 pip:
   install:
+    - ansible # automated configuration tool
     - black # autoformat code nicely
     - httpie # better curl alternative
     - paramiko # ssh communication
@@ -57,6 +58,7 @@ apt:
     - nmap # autorecon dependency
     - openresolv # required for wireguard
     - openvpn # most common VPN for connecting to hacking sites
+    - p7zip-full # 7zip compression tools
     - perl # scripting language
     - python3-dev # pwntools dependency
     - python3-pefile # Windows PE (exe) parser

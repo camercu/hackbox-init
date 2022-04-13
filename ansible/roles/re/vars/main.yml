@@ -1,7 +1,7 @@
 ---
 pwndbg:
   repo: https://github.com/pwndbg/pwndbg
-  dir: /opt/pwndbg
+  dir: "{{ homedir }}/.pwndbg"
 
 pip:
   install:
@@ -15,12 +15,18 @@ apt:
     - capstone-tool # cmdline tool for disassembly
     - default-jdk # to run Ghidra
     - dex2jar # Dalvik decompiler
+    - libimage-exiftool-perl # read/write metadata for many files
+    - foremost # forensic tool for extracting embedded files
     - ghidra # Disassembler/decompiler/debugger
     - ghidra-data # databases to improve ghidra
+    - jadx # Dex to java decompiler
     - jd-gui # java decompiler
     - libcapstone4 # dev libs for disassembly
+    - nasm # assembler
     - python3-capstone # multi-arch disassembly framework
     - qemu-system # system-level emulation
     - qemu-user # user-mode emulation
+    - radare2 # reverse enginnering commandline tools
     - radare2-cutter # GUI wrapper around radare2
     - ropper # tools for building ROP chains
+    - tshark # command line version of wireshark

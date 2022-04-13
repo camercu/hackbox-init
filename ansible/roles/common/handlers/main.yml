@@ -7,7 +7,10 @@
 
 - name: Refresh font cache
   ansible.builtin.command: fc-cache -fv
-  when: font_install.changed
+
+- name: Update database for locate command
+  ansible.builtin.command:
+    cmd: updatedb
 
 - name: Rebooting machine
   ansible.builtin.reboot:

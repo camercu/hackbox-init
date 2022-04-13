@@ -1,4 +1,14 @@
 ---
+- name: Ensure user {{ user }} exists
+  ansible.builtin.user:
+    name: "{{ user }}"
+    shell: /bin/zsh # way better than vanilla bash
+    groups: sudoers
+    append: true # don't remove user from groups not listed in 'groups'
+    generate_ssh_key: true
+    update_password: on_create # keep user's password if already set
+    password: "{{ 'changeme' | password_hash('sha512', 65536 | random(seed=user) | string) }}"
+
 # To only regenerate ssh keys once per host, we touch a file when done.
 # If the file exists, don't do regeneration routine
 - name: Check for ssh-key touchfile
@@ -97,6 +107,7 @@
     name: "{{ apt.install }}"
     state: latest
     update_cache: true
+  notify: Update database for locate command
   tags:
     - apt
     - update
@@ -215,6 +226,7 @@
   ansible.builtin.pip:
     name: "{{ pip.install }}"
     state: latest
+  notify: Update database for locate command
   tags:
     - pip
     - update
@@ -267,7 +279,7 @@
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-  register: font_install
+  notify: Refresh font cache
   tags:
     - zsh
     - fonts
