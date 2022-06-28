@@ -3,7 +3,7 @@
   ansible.builtin.user:
     name: "{{ user }}"
     shell: /bin/zsh # way better than vanilla bash
-    groups: sudoers
+    groups: sudo
     append: true # don't remove user from groups not listed in 'groups'
     generate_ssh_key: true
     update_password: on_create # keep user's password if already set
@@ -23,6 +23,11 @@
   tags:
     - ssh
   block:
+    - name: Ensure openssh-server installed
+      ansible.builtin.apt:
+        name: openssh-server
+        state: latest
+        update_cache: true
     - name: Find existing ssh keys
       ansible.builtin.find:
         paths: "/etc/ssh"
@@ -61,6 +66,7 @@
   ansible.builtin.apt_repository:
     repo: deb-src http://http.kali.org/kali kali-rolling main contrib non-free
     state: present
+  when: ansible_builtin.distribution == "Kali"
   tags:
     - apt
 
@@ -179,6 +185,11 @@
   tags:
     - pyenv
   block:
+    - name: Install pyenv dependencies
+      ansible.builtin.apt:
+        name: "{{ apt.pyenv_deps }}"
+        state: latest
+        update_cache: false
     - name: Find latest release version of pyenv
       ansible.builtin.uri:
         method: GET

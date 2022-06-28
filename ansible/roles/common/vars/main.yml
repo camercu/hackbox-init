@@ -31,18 +31,8 @@ apt:
     - gpg # free PGP replacement
     - software-properties-common # repo manager
 
-  install:
+  pyenv_deps: # dependencies for pyenv
     - build-essential # pyenv dependency
-    - code # VSCode
-    - docker-doc # docker documentation
-    - docker.io # docker containers
-    - fd-find # blazing-fast replacement for find command (in Rust)
-    - flameshot # screenshot tool
-    - fzf # dependency for custom hashcat mode finder
-    - gdb # GNU Debugger
-    - gdb-peda # more friendly gdb display/commands
-    - git # version control
-    - jq # JSON query tool for cli
     - libbz2-dev # pyenv dependency
     - libffi-dev # pyenv dependency
     - liblzma-dev # pyenv dependency
@@ -54,6 +44,23 @@ apt:
     - libxmlsec1-dev # pyenv dependency
     - llvm # pyenv dependency
     - make # pyenv dependency
+    - tk-dev # pyenv dependency
+    - xz-utils # pyenv dependency
+    - zlib1g-dev # pyenv dependency
+    - wget # pyenv dependency
+
+  install:
+    - build-essential # C compiling tools
+    - code # VSCode
+    - docker-doc # docker documentation
+    - docker.io # docker containers
+    - fd-find # blazing-fast replacement for find command (in Rust)
+    - flameshot # screenshot tool
+    - fzf # dependency for custom hashcat mode finder
+    - gdb # GNU Debugger
+    - git # version control
+    - jq # JSON query tool for cli
+    - make # code build tool
     - ncat # better netcat, with ssl support
     - nmap # autorecon dependency
     - openresolv # required for wireguard
@@ -70,16 +77,13 @@ apt:
     - rsync # faster way to scp files, only syncing changes
     - tcpdump # command line packet capture
     - terminator # best terminal emulator
-    - tk-dev # pyenv dependency
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
     - vim # best CLI text editor
-    - wget # pyenv dependency
+    - wget # http requests
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
     - xclip # X-clipboard commandline tool
-    - xz-utils # pyenv dependency
-    - zlib1g-dev # pyenv dependency
     - zsh # better shell
 
 go:
@@ -103,7 +107,6 @@ vscode:
     - golang.go # go language server
     - hashicorp.terraform # terraform/HCL language server
     - infosec-intern.snort # snort-rules language server
-    - matklad.rust-analyzer # best rust language server
     - mesonbuild.mesonbuild # meson (build) language support
     - ms-azuretools.vscode-docker # docker tools
     - ms-python.python  # python extensions
@@ -113,6 +116,7 @@ vscode:
     - ms-vscode.cpptools-extension-pack # C/C++ dev tools
     - redhat.ansible # ansible language server
     - redhat.vscode-yaml # YAML language server
+    - rust-lang.rust-analyzer # best rust language server
     - tamasfe.even-better-toml # TOML language server
     - vscjava.vscode-java-pack # microsoft's java extension pack
     - vscode-icons-team.vscode-icons # better icons
