@@ -186,6 +186,7 @@
     - pyenv
   block:
     - name: Install pyenv dependencies
+      become_user: root
       ansible.builtin.apt:
         name: "{{ apt.pyenv_deps }}"
         state: latest
