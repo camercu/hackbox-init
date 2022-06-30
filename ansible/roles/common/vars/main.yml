@@ -54,6 +54,7 @@ apt:
     - code # VSCode
     - docker-doc # docker documentation
     - docker.io # docker containers
+    - dos2unix # fix line endings
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
     - fzf # dependency for custom hashcat mode finder
