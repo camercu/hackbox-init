@@ -38,8 +38,9 @@ info "Updating apt cache..."
 apt update
 
 in_vm=$(grep flags /proc/cpuinfo 2>/dev/null | grep hypervisor &>/dev/null && echo true || echo false )
-hypervisor="$(cat /sys/devices/virtual/dmi/id/product_name)"
+hypervisor="N/A"
 if [[ $in_vm == true ]]; then
+    hypervisor="$(cat /sys/devices/virtual/dmi/id/product_name)"
     if [[ "$hypervisor" == VMWare* ]]; then
         info "Ensuring VMWare Tools are installed..."
         apt install -y open-vm-tools fuse3
