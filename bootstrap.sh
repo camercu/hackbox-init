@@ -54,6 +54,7 @@ if [[ $in_vm == true ]]; then
             mount -a
         fi
     elif [[ "$hypervisor" == "VirtualBox" ]]; then
+        info "Installing prerequisites for VirtalBox Guest Additions..."
         apt install -y build-essential dkms #linux-headers-$(uname -r)
     fi
 fi
