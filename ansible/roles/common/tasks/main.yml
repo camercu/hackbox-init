@@ -142,6 +142,12 @@
     - go
     - golang
   block:
+    - name: Check currently installed version of Go
+      ansible.builtin.shell:
+        cmd: "go version | awk '{print $3}'"
+      register: installed_go_version
+      changed_when: installed_go_version.stdout
+      failed_when: False
     - name: Find latest release version of Go
       ansible.builtin.uri:
         method: GET
@@ -157,6 +163,7 @@
         src: "https://golang.org/dl/{{ latest_go_version['content'] }}.linux-amd64.tar.gz"
         dest: /usr/local
         remote_src: true
+      when: latest_go_version != installed_go_version
 
 - name: Install Rust
   become_user: "{{ user }}"
