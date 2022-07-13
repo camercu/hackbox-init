@@ -144,7 +144,7 @@
   block:
     - name: Check currently installed version of Go
       ansible.builtin.shell:
-        cmd: "go version | awk '{print $3}'"
+        cmd: "/usr/local/go/bin/go version | awk '{print $3}'"
       register: installed_go_version
       changed_when: installed_go_version.stdout
       failed_when: False
