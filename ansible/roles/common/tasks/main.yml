@@ -157,14 +157,14 @@
         body_format: raw
         return_content: true
       register: latest_go_version
-    # - debug:
-    #     var: latest_go_version['content']
+    # - debug: latest_go_version.content
+    # - debug: installed_go_version.stdout
     - name: Download & Install latest version of Go
       ansible.builtin.unarchive:
         src: "https://golang.org/dl/{{ latest_go_version['content'] }}.linux-amd64.tar.gz"
         dest: /usr/local
         remote_src: true
-      when: latest_go_version != installed_go_version
+      when: latest_go_version.content != installed_go_version.stdout
 
 - name: Install Rust
   become_user: "{{ user }}"
