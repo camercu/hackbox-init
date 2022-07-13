@@ -148,6 +148,7 @@
       register: installed_go_version
       changed_when: installed_go_version.stdout
       failed_when: False
+      become_user: "{{ user }}"
     - name: Find latest release version of Go
       ansible.builtin.uri:
         method: GET
