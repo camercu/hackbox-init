@@ -115,6 +115,7 @@ vscode:
     - ms-toolsai.jupyter # jupyter notebooks
     - ms-vscode-remote.vscode-remote-extensionpack # ssh/WSL/docker dev
     - ms-vscode.cpptools-extension-pack # C/C++ dev tools
+    - ms-vscode.makefile-tools # Makefiles
     - redhat.ansible # ansible language server
     - redhat.vscode-yaml # YAML language server
     - rust-lang.rust-analyzer # best rust language server
