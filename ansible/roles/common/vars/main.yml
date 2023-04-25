@@ -58,6 +58,7 @@ apt:
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
     - fzf # dependency for custom hashcat mode finder
+    - gcm # git credential manager
     - gdb # GNU Debugger
     - git # version control
     - jq # JSON query tool for cli
