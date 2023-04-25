@@ -37,17 +37,17 @@ fi
 info "Updating apt cache..."
 apt update
 
-in_vm=$(grep flags /proc/cpuinfo 2>/dev/null | grep hypervisor &>/dev/null && echo true || echo false )
+in_vm=$(grep flags /proc/cpuinfo 2>/dev/null | grep -q hypervisor && echo true || echo false )
 hypervisor="N/A"
 if [[ $in_vm == true ]]; then
-    hypervisor="$(cat /sys/devices/virtual/dmi/id/product_name)"
-    if [[ "$hypervisor" == VMWare* ]]; then
+    hypervisor="$(cat /sys/devices/virtual/dmi/id/product_name | awk '{ print tolower($0) }')"
+    if [[ "$hypervisor" == vmware* ]]; then
         info "Ensuring VMWare Tools are installed..."
         apt install -y open-vm-tools fuse3
 
         info "Ensuring shared folder is mounted..."
         host_dir="$(awk '{print $1}' $HERE/fstab)"
-        if ! grep -F "$host_dir" /etc/fstab &>/dev/null; then
+        if ! grep -qF "$host_dir" /etc/fstab; then
             cat /etc/fstab "$HERE/fstab" > /tmp/fstab.new
             mv /tmp/fstab.new /etc/fstab
             mountpt="$(awk '{print $2}' "$HERE/fstab")"
