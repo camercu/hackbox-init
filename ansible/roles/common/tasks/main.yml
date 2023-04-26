@@ -137,6 +137,15 @@
         cmd: "./install.sh"
         creates: "{{ homedir }}/.gitconfig-aliases"
 
+- name: Fix broken SNMP MIB
+  tags:
+    - snmp
+  ansible.builtin.get_url:
+    url: "https://pastebin.com/raw/p3QyuXzZ"
+    dest: "/usr/share/snmp/mibs/ietf/SNMPv2-PDU"
+    checksum: sha1:25DE38928C8A1C2B295D16CAB18746F9BD7D69FE
+    force: true
+
 - name: Install latest release of Golang
   tags:
     - go
@@ -147,7 +156,7 @@
         cmd: "/usr/local/go/bin/go version | awk '{print $3}'"
       register: installed_go_version
       changed_when: installed_go_version.stdout
-      failed_when: False
+      failed_when: false
       become_user: "{{ user }}"
     - name: Find latest release version of Go
       ansible.builtin.uri:
@@ -178,13 +187,12 @@
     - name: Fetch rustup
       ansible.builtin.uri:
         url: https://sh.rustup.rs
-        return_content: yes
       when: not cargo_dir.stat.exists
       register: rustup_installer
     - name: Run rustup installer
       ansible.builtin.command:
         cmd: sh -s -- -y
-        stdin: "{{ rustup_installer.content }}"
+        stdin: "{{ rustup_installer.json }}"
       when: not cargo_dir.stat.exists
 
 # Pyenv lets us have python2 install alongside the default system python3
@@ -266,7 +274,7 @@
         - name: Fetch oh-my-zsh
           ansible.builtin.uri:
             url: "{{ ohmyzsh.install_url }}"
-            return_content: yes
+            return_content: true
           when: not ohmyzsh_dir.stat.exists
           register: ohmyzsh_installer
         - name: Run oh-my-zsh installer
@@ -315,7 +323,7 @@
 
 - name: Checking if reboot required
   ansible.builtin.command: test -f /var/run/reboot-required
-  failed_when: False
+  failed_when: false
   register: reboot_required
   changed_when: reboot_required.rc == 0
   notify: Rebooting machine
