@@ -86,6 +86,7 @@ apt:
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
     - xclip # X-clipboard commandline tool
+    - xxd # hexdump tool
     - zsh # better shell
 
 go:
