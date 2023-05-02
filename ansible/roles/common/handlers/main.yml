@@ -15,3 +15,7 @@
 - name: Rebooting machine
   ansible.builtin.reboot:
   when: "ansible_connection != 'local'"
+
+- name: Configure git-credential-manager
+  ansible.builtin.command:
+    cmd: git-credential-manager-core configure

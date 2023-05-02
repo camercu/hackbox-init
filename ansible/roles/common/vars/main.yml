@@ -58,7 +58,6 @@ apt:
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
     - fzf # dependency for custom hashcat mode finder
-    - gcm # git credential manager
     - gdb # GNU Debugger
     - git # version control
     - jq # JSON query tool for cli
@@ -102,6 +101,10 @@ pyenv:
 ohmyzsh:
   install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
   dir: "{{ homedir }}/.oh-my-zsh"
+
+gcm:  # git-credential-manager
+  deb_url_prefix: "https://github.com/git-ecosystem/git-credential-manager/releases/download"
+  release_api_url: "https://api.github.com/repos/git-ecosystem/git-credential-manager/releases/latest"
 
 vscode:
   extensions:

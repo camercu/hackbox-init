@@ -94,6 +94,20 @@
         filename: vscode
         state: present
 
+- name: Install git-credential-manager
+  tags:
+    - gcm
+    - apt
+  block:
+    - name: Get latest version of gcm
+      ansible.builtin.uri:
+        url: "{{ gcm.release_api_url }}"
+      register: gcm_version
+    - name: Install latest version of gcm
+      ansible.builtin.apt:
+        deb: "{{ gcm.deb_url_prefix }}/{{ gcm_version.json.tag_name }}/gcm-linux_amd64{{ gcm_version.json.tag_name | replace('v','.') }}.deb"
+      notify: Configure git-credential-manager
+
 - name: Get foreign dpkg architectures
   ansible.builtin.command: dpkg --print-foreign-architectures
   register: dpkg_architectures
@@ -136,15 +150,6 @@
         chdir: "{{ dotfiles.dir }}"
         cmd: "./install.sh"
         creates: "{{ homedir }}/.gitconfig-aliases"
-
-- name: Fix broken SNMP MIB
-  tags:
-    - snmp
-  ansible.builtin.get_url:
-    url: "https://pastebin.com/raw/p3QyuXzZ"
-    dest: "/usr/share/snmp/mibs/ietf/SNMPv2-PDU"
-    checksum: sha1:25DE38928C8A1C2B295D16CAB18746F9BD7D69FE
-    force: true
 
 - name: Install latest release of Golang
   tags:
