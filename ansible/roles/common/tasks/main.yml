@@ -192,12 +192,13 @@
     - name: Fetch rustup
       ansible.builtin.uri:
         url: https://sh.rustup.rs
+        return_content: yes
       when: not cargo_dir.stat.exists
       register: rustup_installer
     - name: Run rustup installer
       ansible.builtin.command:
         cmd: sh -s -- -y
-        stdin: "{{ rustup_installer.json }}"
+        stdin: "{{ rustup_installer.content }}"
       when: not cargo_dir.stat.exists
 
 # Pyenv lets us have python2 install alongside the default system python3
