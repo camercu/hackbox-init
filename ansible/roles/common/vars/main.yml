@@ -121,6 +121,7 @@ vscode:
     - ms-vscode-remote.vscode-remote-extensionpack # ssh/WSL/docker dev
     - ms-vscode.cpptools-extension-pack # C/C++ dev tools
     - ms-vscode.makefile-tools # Makefiles
+    - ms-vscode.powershell # PowerShell language server
     - redhat.ansible # ansible language server
     - redhat.vscode-yaml # YAML language server
     - rust-lang.rust-analyzer # best rust language server
