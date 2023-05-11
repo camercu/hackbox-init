@@ -1,3 +1,0 @@
----
-user: kali
-homedir: "/home/{{ user }}"
