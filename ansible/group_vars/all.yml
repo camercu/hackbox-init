@@ -1,3 +1,3 @@
 ---
-user: kali
+user: cr4nk
 homedir: "/home/{{ user }}"

@@ -9,6 +9,10 @@
     update_password: on_create # keep user's password if already set
     password: "{{ 'changeme' | password_hash('sha512', 65536 | random(seed=user) | string) }}"
 
+- name: Create XDG Directories
+  ansible.builtin.import_tasks:
+    file: xdg_dirs.yml
+
 # To only regenerate ssh keys once per host, we touch a file when done.
 # If the file exists, don't do regeneration routine
 - name: Check for ssh-key touchfile
@@ -99,13 +103,19 @@
     - gcm
     - apt
   block:
-    - name: Get latest version of gcm
-      ansible.builtin.uri:
-        url: "{{ gcm.release_api_url }}"
-      register: gcm_version
-    - name: Install latest version of gcm
+    - name: Add Microsoft .NET package repository
       ansible.builtin.apt:
-        deb: "{{ gcm.deb_url_prefix }}/{{ gcm_version.json.tag_name }}/gcm-linux_{{ ansible_architecture | replace('aarch64', 'arm64') }}{{ gcm_version.json.tag_name | replace('v','.') }}.deb"
+        deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
+        update_cache: true
+    - name: Install latest version of dotnet SDK and Runtime
+      ansible.builtin.apt:
+        pkg:
+          - dotnet-sdk-9.0
+          - aspnetcore-runtime-9.0
+        state: latest
+        update_cache: false
+    - name: Install latest version of gcm
+      ansible.builtin.command: dotnet tool install -g git-credential-manager
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures

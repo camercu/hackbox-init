@@ -1,0 +1,27 @@
+---
+- name: Include XDG vars
+  buitin.ansible.include_vars: xdg_dirs.yml
+
+- name: Ensure XDG_CACHE_HOME directory exists.
+  ansible.builtin.file:
+    mode: '0755'
+    path: "{{ xdg_cache_home }}"
+    state: directory
+
+- name: Ensure XDG_CONFIG_HOME directory exists.
+  ansible.builtin.file:
+    mode: '0755'
+    path: "{{ xdg_config_home }}"
+    state: directory
+
+- name: Ensure XDG_DATA_HOME directory exists.
+  ansible.builtin.file:
+    mode: '0755'
+    path: "{{ xdg_data_home }}"
+    state: directory
+
+- name: Ensure XDG_STATE_HOME directory exists.
+  ansible.builtin.file:
+    mode: '0755'
+    path: "{{ xdg_state_home }}"
+    state: directory  
