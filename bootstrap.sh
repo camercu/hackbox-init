@@ -64,7 +64,7 @@ info "Installing prerequisites for Ansible..."
 apt install -y python3 python3-pip
 
 info "Installing Ansible..."
-python3 -m pip install -U ansible
+python3 -m pip install -U ansible || apt install -y python3-ansible-runner
 
 info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
