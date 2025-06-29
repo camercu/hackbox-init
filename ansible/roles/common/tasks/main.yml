@@ -105,7 +105,7 @@
       register: gcm_version
     - name: Install latest version of gcm
       ansible.builtin.apt:
-        deb: "{{ gcm.deb_url_prefix }}/{{ gcm_version.json.tag_name }}/gcm-linux_{{ ansible_facts.ansible_architecture }}{{ gcm_version.json.tag_name | replace('v','.') }}.deb"
+        deb: "{{ gcm.deb_url_prefix }}/{{ gcm_version.json.tag_name }}/gcm-linux_{{ ansible_facts.ansible_architecture | replace('aarch64', 'arm64') }}{{ gcm_version.json.tag_name | replace('v','.') }}.deb"
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures
