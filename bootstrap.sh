@@ -12,19 +12,19 @@ BLUE=$(tput setaf 4)
 CLEAR=$(tput sgr0)
 
 function info {
-  echo "${BLUE}[*] $@${CLEAR}"
+  echo "${BLUE}[*] ${*}${CLEAR}"
 }
 
 function warn {
-  echo "${YELLOW}[!] $@${CLEAR}"
+  echo "${YELLOW}[!] ${*}${CLEAR}"
 }
 
 function error {
-  echo "${RED}[x] $@${CLEAR}"
+  echo "${RED}[x] ${*}${CLEAR}"
 }
 
 function success {
-  echo "${GREEN}[+] $@${CLEAR}"
+  echo "${GREEN}[+] ${*}${CLEAR}"
 }
 
 if [[ "$UID" != 0 ]]; then
@@ -40,13 +40,13 @@ apt update
 in_vm=$(grep flags /proc/cpuinfo 2>/dev/null | grep -q hypervisor && echo true || echo false)
 hypervisor="N/A"
 if [[ $in_vm == true ]]; then
-  hypervisor="$(cat /sys/devices/virtual/dmi/id/product_name | awk '{ print tolower($0) }')"
+  hypervisor="$(awk '{ print tolower($0) }' /sys/devices/virtual/dmi/id/product_name)"
   if [[ "$hypervisor" == vmware* ]]; then
     info "Ensuring VMWare Tools are installed..."
     apt install -y open-vm-tools fuse3
 
     info "Ensuring shared folder is mounted..."
-    host_dir="$(awk '{print $1}' $HERE/fstab)"
+    host_dir="$(awk '{print $1}' "$HERE/fstab")"
     if ! grep -qF "$host_dir" /etc/fstab; then
       cat /etc/fstab "$HERE/fstab" >/tmp/fstab.new
       mv /tmp/fstab.new /etc/fstab
