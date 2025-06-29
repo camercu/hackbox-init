@@ -84,10 +84,11 @@
     - vscode
   block:
     - name: Add Microsoft Apt Signing Key
-      ansible.builtin.apt_key:
+      ansible.builtin.get_url:
         url: https://packages.microsoft.com/keys/microsoft.asc
-        keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
-        state: present
+        dest: /etc/apt/trusted.gpg.d/microsoft.gpg
+        mode: '0644'
+        force: true
     - name: Add VSCode Apt Repo
       ansible.builtin.apt_repository:
         repo: deb https://packages.microsoft.com/repos/vscode stable main
