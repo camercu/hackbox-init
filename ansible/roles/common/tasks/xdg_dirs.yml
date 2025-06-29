@@ -1,6 +1,6 @@
 ---
 - name: Include XDG vars
-  buitin.ansible.include_vars: xdg_dirs.yml
+  ansible.builtin.include_vars: xdg_dirs.yml
 
 - name: Ensure XDG_CACHE_HOME directory exists.
   ansible.builtin.file:
