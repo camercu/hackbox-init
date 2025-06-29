@@ -1,4 +1,6 @@
 ---
+arch: "{{ ansible_facts.ansible_architecture | replace('aarch64', 'arm64') }}"
+
 firefox:
   extensions:
     - https://addons.mozilla.org/firefox/downloads/file/3616824/foxyproxy_standard-7.5.1-an+fx.xpi # FoxyProxy Standard
@@ -102,7 +104,7 @@ ohmyzsh:
   install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
   dir: "{{ homedir }}/.oh-my-zsh"
 
-gcm:  # git-credential-manager
+gcm: # git-credential-manager
   deb_url_prefix: "https://github.com/git-ecosystem/git-credential-manager/releases/download"
   release_api_url: "https://api.github.com/repos/git-ecosystem/git-credential-manager/releases/latest"
 
@@ -115,7 +117,7 @@ vscode:
     - infosec-intern.snort # snort-rules language server
     - mesonbuild.mesonbuild # meson (build) language support
     - ms-azuretools.vscode-docker # docker tools
-    - ms-python.python  # python extensions
+    - ms-python.python # python extensions
     - ms-python.vscode-pylance # best python language server
     - ms-toolsai.jupyter # jupyter notebooks
     - ms-vscode-remote.vscode-remote-extensionpack # ssh/WSL/docker dev
