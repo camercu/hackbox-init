@@ -30,7 +30,7 @@ function success {
 if [[ "$UID" != 0 ]]; then
   warn "This script must be run as root!"
   info "Re-trying with sudo..."
-  sudo $0 $@
+  sudo "$0" "$@"
   exit $?
 fi
 
