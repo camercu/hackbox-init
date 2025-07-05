@@ -72,3 +72,7 @@ xdg_cache_home: "{{ homedir }}/.cache"
 # print a warning message. Applications should use this directory for communication and synchronization purposes and
 # should not place larger files in it, since it might reside in runtime memory and cannot necessarily be swapped out to
 # disk.
+
+# $XDG_BIN_HOME defines the base directory relative to which user-specific executable files should be stored. If
+# $XDG_BIN_HOME is either not set or empty, a default equal to $HOME/.local/bin should be used.
+xdg_bin_home: "{{ homedir }}/.local/bin"
