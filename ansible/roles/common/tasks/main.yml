@@ -104,11 +104,9 @@
     - apt
   block:
     - name: Add Microsoft .NET package repository
-      ansible.builtin.apt_repository:
-        repo: ppa:dotnet/backports
-      # ansible.builtin.apt:
-      #   deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
-      #   update_cache: true
+      ansible.builtin.apt:
+        deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
+        update_cache: true
     - name: Install latest version of dotnet SDK and Runtime
       ansible.builtin.apt:
         pkg:
@@ -212,60 +210,6 @@
         cmd: sh -s -- -y
         stdin: "{{ rustup_installer.content }}"
       when: not cargo_dir.stat.exists
-
-# Pyenv lets us have python2 install alongside the default system python3
-- name: "Install & configure pyenv for {{ user }} user"
-  become_user: "{{ user }}"
-  tags:
-    - pyenv
-  block:
-    - name: Install pyenv dependencies
-      become_user: root
-      ansible.builtin.apt:
-        name: "{{ apt.pyenv_deps }}"
-        state: latest
-        update_cache: false
-    - name: Find latest release version of pyenv
-      ansible.builtin.uri:
-        method: GET
-        url: "{{ pyenv.release_api_url }}"
-        follow_redirects: safe
-        body_format: json
-      register: pyenv_release_info
-    - name: Download pyenv
-      ansible.builtin.git:
-        repo: "{{ pyenv.repo_url }}"
-        dest: "{{ pyenv.root }}"
-        depth: 1
-        version: "{{ pyenv_release_info['json']['tag_name'] }}"
-    - name: Install pyenv python version
-      ansible.builtin.shell:
-        cmd: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          export PATH="$PYENV_ROOT/bin:$PATH"
-          eval "$(pyenv init --path)"
-          eval "$(pyenv init -)"
-          CFLAGS='-O2' pyenv install -s {{ pyenv.python_ver }}
-        creates: "{{ homedir }}/.pyenv/versions/{{ pyenv.python_ver }}"
-    - name: Validate pyenv configured in .zshrc
-      ansible.builtin.lineinfile:
-        path: "{{ homedir }}/.zshrc"
-        line: "{{ item }}"
-        state: present
-      loop:
-        - export PYENV_ROOT="$HOME/.pyenv"
-        - export PATH="$PYENV_ROOT/bin:$PATH"
-        - eval "$(pyenv init --path)"
-        - eval "$(pyenv init -)"
-    - name: Validate pyenv configured in .profile
-      ansible.builtin.lineinfile:
-        path: "{{ homedir }}/.profile"
-        line: "{{ item }}"
-        state: present
-      loop:
-        - export PYENV_ROOT="$HOME/.pyenv"
-        - export PATH="$PYENV_ROOT/bin:$PATH"
-        - eval "$(pyenv init --path)"
 
 - name: "Install python packages: {{ pip.install | join(', ') }}"
   become_user: "{{ user }}"

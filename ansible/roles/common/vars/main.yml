@@ -14,14 +14,7 @@ dotfiles:
 pip:
   install:
     - ansible # automated configuration tool
-    - black # autoformat code nicely
-    - httpie # better curl alternative
-    - paramiko # ssh communication
-    - pip # python package manager, needs updating regularly
-    - pipx # get CLI tools from pip
-    - pytest # unit testing
-    - requests # easy scripting of http requests
-    - tabulate # pretty text tables
+    - uv # pip replacement, allows multiple python versions
 
 apt:
   pre_install: # required to add new apt repos/signing keys
@@ -30,24 +23,6 @@ apt:
     - gnupg2 # free PGP replacement
     - gpg # free PGP replacement
     - software-properties-common # repo manager
-
-  pyenv_deps: # dependencies for pyenv
-    - build-essential # pyenv dependency
-    - libbz2-dev # pyenv dependency
-    - libffi-dev # pyenv dependency
-    - liblzma-dev # pyenv dependency
-    - libncursesw5-dev # pyenv dependency
-    - libreadline-dev # pyenv dependency
-    - libsqlite3-dev # pyenv dependency
-    - libssl-dev # pyenv dependency
-    - libxml2-dev # pyenv dependency
-    - libxmlsec1-dev # pyenv dependency
-    - llvm # pyenv dependency
-    - make # pyenv dependency
-    - tk-dev # pyenv dependency
-    - xz-utils # pyenv dependency
-    - zlib1g-dev # pyenv dependency
-    - wget # pyenv dependency
 
   install:
     - build-essential # C compiling tools
@@ -63,11 +38,13 @@ apt:
     - jq # JSON query tool for cli
     - make # code build tool
     - ncat # better netcat, with ssl support
+    - neovim # best CLI text editor
     - nmap # autorecon dependency
     - openresolv # required for wireguard
     - openvpn # most common VPN for connecting to hacking sites
     - p7zip-full # 7zip compression tools
     - perl # scripting language
+    - pipx # python executable installer
     - python3-dev # pwntools dependency
     - python3-pefile # Windows PE (exe) parser
     - python3-pip # python package manager
@@ -80,23 +57,17 @@ apt:
     - terminator # best terminal emulator
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
-    - vim # best CLI text editor
+    - vim # great CLI text editor
     - wget # http requests
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
     - xclip # X-clipboard commandline tool
+    - xh # better curl alternative
     - xxd # hexdump tool
     - zsh # better shell
 
 go:
   version_url: https://golang.org/VERSION?m=text
-
-pyenv:
-  root: "{{ homedir }}/.pyenv"
-  repo_url: "https://github.com/pyenv/pyenv"
-  release_api_url: >-
-    https://api.github.com/repos/pyenv/pyenv/releases/latest
-  python_ver: 2.7.18 # some old tools need python2 to work
 
 ohmyzsh:
   install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
