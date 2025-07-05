@@ -104,9 +104,11 @@
     - apt
   block:
     - name: Add Microsoft .NET package repository
-      ansible.builtin.apt:
-        deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
-        update_cache: true
+      ansible.builtin.apt_repository:
+        repo: ppa:dotnet/backports
+      # ansible.builtin.apt:
+      #   deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
+      #   update_cache: true
     - name: Install latest version of dotnet SDK and Runtime
       ansible.builtin.apt:
         pkg:
@@ -115,7 +117,7 @@
         state: latest
         update_cache: false
     - name: Install latest version of gcm
-      ansible.builtin.command: dotnet tool install -g git-credential-manager
+      ansible.builtin.command: dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures
