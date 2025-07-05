@@ -1,6 +1,8 @@
 ---
+# source: https://github.com/djonasson/ansible-role-xdg_bds/blob/main/tasks/main.yml
+
 - name: Include XDG vars
-  ansible.builtin.include_vars: xdg_dirs.yml
+  ansible.builtin.include_vars: xdg_dir_vars.yml
 
 - name: Ensure XDG_CACHE_HOME directory exists.
   ansible.builtin.file:
