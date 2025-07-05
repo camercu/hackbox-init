@@ -5,15 +5,15 @@
 
 # $XDG_DATA_HOME defines the base directory relative to which user-specific data files should be stored. If
 # $XDG_DATA_HOME is either not set or empty, a default equal to $HOME/.local/share should be used.
-xdg_data_home: "{{ ansible_user_dir }}/.local/share"
+xdg_data_home: "{{ homedir }}/.local/share"
 
 # $XDG_CONFIG_HOME defines the base directory relative to which user-specific configuration files should be stored. If
 # $XDG_CONFIG_HOME is either not set or empty, a default equal to $HOME/.config should be used.
-xdg_config_home: "{{ ansible_user_dir }}/.config"
+xdg_config_home: "{{ homedir }}/.config"
 
 # $XDG_STATE_HOME defines the base directory relative to which user-specific state files should be stored. If
 # $XDG_STATE_HOME is either not set or empty, a default equal to $HOME/.local/state should be used.
-xdg_state_home: "{{ ansible_user_dir }}/.local/state"
+xdg_state_home: "{{ homedir }}/.local/state"
 
 # The $XDG_STATE_HOME contains state data that should persist between (application) restarts, but that is not important
 # or portable enough to the user that it should be stored in $XDG_DATA_HOME. It may contain:
@@ -49,7 +49,7 @@ xdg_config_dirs: "/etc/xdg"
 
 # $XDG_CACHE_HOME defines the base directory relative to which user-specific non-essential data files should be stored.
 # If $XDG_CACHE_HOME is either not set or empty, a default equal to $HOME/.cache should be used.
-xdg_cache_home: "{{ ansible_user_dir }}/.cache"
+xdg_cache_home: "{{ homedir }}/.cache"
 # $XDG_RUNTIME_DIR defines the base directory relative to which user-specific non-essential runtime files and other
 # file objects (such as sockets, named pipes, ...) should be stored. The directory MUST be owned by the user, and he
 # MUST be the only one having read and write access to it. Its Unix access mode MUST be 0700.
