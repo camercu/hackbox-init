@@ -131,7 +131,7 @@
         mode: '0755'
     - name: Install latest version of gcm
       become_user: "{{ user }}"
-      ansible.builtin.command: "dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}"
+      ansible.builtin.command: "{{ dotnet.install_dir }}/dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}"
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures
