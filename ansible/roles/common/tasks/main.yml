@@ -211,7 +211,7 @@
     # - debug: installed_go_version.stdout
     - name: Download & Install latest version of Go
       ansible.builtin.unarchive:
-        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{ cpu_arch }}.tar.gz"
+        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{cpu_arch}}.tar.gz"
         dest: /usr/local
         remote_src: true
       when: latest_go_version.content != installed_go_version.stdout
