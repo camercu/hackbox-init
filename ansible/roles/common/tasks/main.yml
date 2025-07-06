@@ -117,7 +117,7 @@
       ansible.builtin.shell: |
         "/tmp/dotnet-install.sh" --version latest --install-dir {{ xdg_bin_home }}
       args:
-        creates: "{{ dotnet_install_dir }}/dotnet"
+        creates: "{{ xdg_bin_home }}/dotnet"
     - name: Install latest version of gcm
       ansible.builtin.command: dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}
       notify: Configure git-credential-manager
