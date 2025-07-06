@@ -11,11 +11,6 @@ dotfiles:
   dir: "{{ homedir }}/.dotfiles"
   repo: "https://github.com/camercu/dotfiles"
 
-pip:
-  install:
-    - ansible # automated configuration tool
-    - uv # pip replacement, allows multiple python versions
-
 dotnet:
   install_dir: /usr/local/share/dotnet
   # dependencies for .NET 12.x
@@ -41,6 +36,7 @@ apt:
     - software-properties-common # repo manager
 
   install:
+    - ansible # config managment tool
     - bat # cat alternative
     - build-essential # C compiling tools
     - code # VSCode
@@ -80,6 +76,7 @@ apt:
     - terminator # best terminal emulator
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
+    - tree-sitter-cli # language parsers for Neovim
     - vim # great CLI text editor
     - wget # http requests
     - wireguard # fastest VPN tunnel

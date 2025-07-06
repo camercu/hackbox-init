@@ -1,11 +1,19 @@
 ---
 - name: Get (normalized) CPU architecture
   set_fact:
-    cpu_arch: >-
+    cpu_arch1: >-
       {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
         amd64
       {% elif ansible_facts.architecture in ['aarch64', 'arm64'] %}
         arm64
+      {% else %}
+        unsupported
+      {% endif %}
+    cpu_arch2: >-
+      {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
+        x86_64
+      {% elif ansible_facts.architecture in ['aarch64', 'arm64'] %}
+        aarch64
       {% else %}
         unsupported
       {% endif %}
@@ -212,7 +220,7 @@
     # - debug: installed_go_version.stdout
     - name: Download & Install latest version of Go
       ansible.builtin.unarchive:
-        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{ cpu_arch | trim }}.tar.gz"
+        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{ cpu_arch1 | trim }}.tar.gz"
         dest: /usr/local
         remote_src: true
       when: latest_go_version.content != installed_go_version.stdout
@@ -238,14 +246,15 @@
         stdin: "{{ rustup_installer.content }}"
       when: not cargo_dir.stat.exists
 
-- name: "Install python packages: {{ pip.install | join(', ') }}"
+- name: "Install uv (pip replacement)"
   become_user: "{{ user }}"
-  ansible.builtin.pip:
-    name: "{{ pip.install }}"
-    state: latest
+  ansible.builtin.unarchive:
+    src: "https://github.com/astral-sh/uv/releases/latest/download/uv-{{ cpu_arch2 | trim }}-unknown-linux-gnu.tar.gz"
+    dest: "{{ xdg_bin_home }}"
+    remote_src: true
   notify: Update database for locate command
   tags:
-    - pip
+    - uv
     - update
 
 - name: Configure Oh-My-Zsh
