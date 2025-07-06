@@ -154,6 +154,11 @@
         owner: root
         group: root
         mode: '0644'
+    - name: Create git-credential-manager install directory
+      ansible.builtin.file:
+        path: "{{ gcm.install_dir }}"
+        state: directory
+        mode: '0755'
     - name: Install latest version of git-credential-manager
       ansible.builtin.command: 
         cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path /usr/local/bin git-credential-manager"
