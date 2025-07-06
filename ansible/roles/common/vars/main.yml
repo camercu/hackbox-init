@@ -84,7 +84,7 @@ apt:
     - zsh # better shell
 
 go:
-  version_url: https://golang.org/VERSION?m=text
+  version_url: https://go.dev/dl/?mode=json
 
 ohmyzsh:
   install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
