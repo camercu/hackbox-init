@@ -78,7 +78,7 @@
   ansible.builtin.apt:
     name: "{{ apt.pre_install }}"
     state: latest
-    update_cache: false
+    update_cache: true
   tags:
     - apt
     - update
@@ -103,17 +103,21 @@
     - gcm
     - apt
   block:
-    - name: Add Microsoft .NET package repository
+    - name: Ensure .NET dependencies are installed
       ansible.builtin.apt:
-        deb: https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb
-        update_cache: true
-    - name: Install latest version of dotnet SDK and Runtime
-      ansible.builtin.apt:
-        pkg:
-          - dotnet-sdk-9.0
-          - aspnetcore-runtime-9.0
-        state: latest
+        name: "{{ apt.dotnet_deps }}"
+        state: present
         update_cache: false
+    - name: Download dotnet-install script
+      ansible.builtin.get_url:
+        url: https://dot.net/v1/dotnet-install.sh
+        dest: "/tmp/dotnet-install.sh"
+        mode: '0755'
+    - name: Run dotnet-install script
+      ansible.builtin.shell: |
+        "/tmp/dotnet-install.sh" --version latest --install-dir {{ xdg_bin_home }}
+      args:
+        creates: "{{ dotnet_install_dir }}/dotnet"
     - name: Install latest version of gcm
       ansible.builtin.command: dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}
       notify: Configure git-credential-manager

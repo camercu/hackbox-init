@@ -24,6 +24,20 @@ apt:
     - gpg # free PGP replacement
     - software-properties-common # repo manager
 
+  # dependencies for .NET 12.x
+  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian?tabs=dotnet9#dependencies
+  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-decision#dependencies
+  dotnet_deps:
+    - ca-certificates
+    - libc6
+    - libgcc-s1
+    - libgssapi-krb5-2
+    - libicu74
+    - liblttng-ust1
+    - libssl3
+    - libstdc++6
+    - zlib1g
+
   install:
     - build-essential # C compiling tools
     - code # VSCode
