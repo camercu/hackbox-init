@@ -77,7 +77,6 @@ apt:
     - stow # GNU stow for managing dotfile install
     - tcpdump # command line packet capture
     - tealdeer # tldr replacement
-    - tectonic # TeX engine for rendering math in neovim
     - terminator # best terminal emulator
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
