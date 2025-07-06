@@ -17,6 +17,6 @@
   when: "ansible_connection != 'local'"
 
 - name: Configure git-credential-manager
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   ansible.builtin.command:
     cmd: git-credential-manager-core configure

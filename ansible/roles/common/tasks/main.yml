@@ -130,7 +130,7 @@
         create: yes
         mode: '0755'
     - name: Install latest version of gcm
-      become: "{{ user }}"
+      become_user: "{{ user }}"
       ansible.builtin.command: "dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_dir }}"
       notify: Configure git-credential-manager
 
