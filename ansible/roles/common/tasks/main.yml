@@ -141,12 +141,19 @@
       ansible.builtin.command:
         cmd: "/tmp/dotnet-install.sh --version latest --install-dir {{ dotnet.install_dir }}"
         creates: "{{ dotnet.install_dir }}/dotnet"
-    - name: Add dotnet to system PATH
-      lineinfile:
-        path: /etc/profile.d/dotnet.sh
-        line: 'export PATH=$PATH:{{ dotnet.install_dir }}'
-        create: yes
-        mode: '0755'
+    - name: Link dotnet binary to /usr/local/bin/
+      ansible.builtin.file:
+        src: "{{ dotnet.install_dir }}/dotnet"
+        dest: /usr/local/bin/dotnet
+        state: link
+    - name: Set DOTNET_ROOT env var for all users
+      ansible.builtin.copy:
+        dest: /etc/profile.d/dotnet.sh
+        content: |
+          export DOTNET_ROOT='{{ dotnet.install_dir }}'
+        owner: root
+        group: root
+        mode: '0644'
     - name: Install latest version of gcm
       become_user: "{{ user }}"
       ansible.builtin.command: 

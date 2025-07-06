@@ -18,5 +18,5 @@
 
 - name: Configure git-credential-manager
   become_user: "{{ user }}"
-  ansible.builtin.command:
-    cmd: git-credential-manager-core configure
+  ansible.builtin.shell:
+    cmd: DOTNET_ROOT='{{ dotnet.install_dir }}' git-credential-manager-core configure
