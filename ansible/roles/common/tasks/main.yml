@@ -252,6 +252,7 @@
     src: "https://github.com/astral-sh/uv/releases/latest/download/uv-{{ cpu_arch2 | trim }}-unknown-linux-gnu.tar.gz"
     dest: "{{ xdg_bin_home }}"
     remote_src: true
+    extra_opts: [--strip-components=1] # extract without creating subdir
   notify: Update database for locate command
   tags:
     - uv
