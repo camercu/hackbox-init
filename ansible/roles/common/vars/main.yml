@@ -41,7 +41,6 @@ apt:
     - software-properties-common # repo manager
 
   install:
-    - bandwhich # display network usage by process
     - bat # cat alternative
     - bottom # top alternative; command 'btm'
     - build-essential # C compiling tools
