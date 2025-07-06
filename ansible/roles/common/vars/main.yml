@@ -39,6 +39,7 @@ apt:
     - gnupg2 # free PGP replacement
     - gpg # free PGP replacement
     - software-properties-common # repo manager
+    - stow # GNU stow for managing dotfile install
 
   install:
     - build-essential # C compiling tools
