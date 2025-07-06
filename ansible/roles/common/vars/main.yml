@@ -32,7 +32,7 @@ apt:
     - libc6
     - libgcc-s1
     - libgssapi-krb5-2
-    - libicu74
+    - libicu76
     - liblttng-ust1
     - libssl3
     - libstdc++6
