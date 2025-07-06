@@ -55,7 +55,6 @@ apt:
     - gdb # GNU Debugger
     - git # version control
     - jq # JSON query tool for cli
-    - jujutsu # git-compatible VCS system ('jj' tool)
     - lsd # better version of `ls`
     - make # code build tool
     - ncat # better netcat, with ssl support
