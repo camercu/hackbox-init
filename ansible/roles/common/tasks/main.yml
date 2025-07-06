@@ -154,12 +154,15 @@
         owner: root
         group: root
         mode: '0644'
-    - name: Install latest version of gcm
-      become_user: "{{ user }}"
+    - name: Install latest version of git-credential-manager
       ansible.builtin.command: 
-        cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path {{ xdg_bin_home }} git-credential-manager"
-        creates: "{{ xdg_bin_home }}/git-credential-manager"
-      notify: Configure git-credential-manager
+        cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path /usr/local/bin git-credential-manager"
+        creates: "/usr/local/bin/git-credential-manager"
+    - name: Link git-credential-manager binary to /usr/local/bin/
+      ansible.builtin.file:
+        src: "{{ gcm.install_dir }}/git-credential-manager"
+        dest: /usr/local/bin/git-credential-manager
+        state: link
 
 - name: Get foreign dpkg architectures
   ansible.builtin.command: dpkg --print-foreign-architectures

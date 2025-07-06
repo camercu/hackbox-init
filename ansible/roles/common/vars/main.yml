@@ -94,8 +94,7 @@ ohmyzsh:
   dir: "{{ homedir }}/.oh-my-zsh"
 
 gcm: # git-credential-manager
-  deb_url_prefix: "https://github.com/git-ecosystem/git-credential-manager/releases/download"
-  release_api_url: "https://api.github.com/repos/git-ecosystem/git-credential-manager/releases/latest"
+  install_dir: /usr/local/share/gcm
 
 vscode:
   extensions:
