@@ -41,17 +41,25 @@ apt:
     - software-properties-common # repo manager
 
   install:
+    - bandwhich # display network usage by process
+    - bat # cat alternative
+    - bottom # top alternative; command 'btm'
     - build-essential # C compiling tools
     - code # VSCode
     - docker-doc # docker documentation
     - docker.io # docker containers
     - dos2unix # fix line endings
+    - dust # du alternative (disk usage)
+    - delta # diff viewer
+    - entr # run arbitrary commands on file change
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
     - fzf # dependency for custom hashcat mode finder
     - gdb # GNU Debugger
     - git # version control
     - jq # JSON query tool for cli
+    - jujutsu # git-compatible VCS system ('jj' tool)
+    - lsd # better version of `ls`
     - make # code build tool
     - ncat # better netcat, with ssl support
     - neovim # best CLI text editor
@@ -61,6 +69,7 @@ apt:
     - p7zip-full # 7zip compression tools
     - perl # scripting language
     - pipx # python executable installer
+    - procs # ps alternative
     - python3-dev # pwntools dependency
     - python3-pefile # Windows PE (exe) parser
     - python3-pip # python package manager
@@ -69,8 +78,11 @@ apt:
     - python3-venv # python virtual environments
     - ripgrep # blazing-fast replacement for grep (written in Rust)
     - rsync # faster way to scp files, only syncing changes
+    - sad # sed alternative
     - stow # GNU stow for managing dotfile install
     - tcpdump # command line packet capture
+    - tealdeer # tldr replacement
+    - tectonic # TeX engine for rendering math in neovim
     - terminator # best terminal emulator
     - tmux # terminal multiplexer
     - tree # view file tree in cmdline
