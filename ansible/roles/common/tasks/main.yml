@@ -130,9 +130,8 @@
         dest: "/tmp/dotnet-install.sh"
         mode: '0755'
     - name: Run dotnet-install script
-      ansible.builtin.command: |
-        "/tmp/dotnet-install.sh" --version latest --install-dir {{ dotnet.install_dir }}
-      args:
+      ansible.builtin.command:
+        cmd: "/tmp/dotnet-install.sh --version latest --install-dir {{ dotnet.install_dir }}"
         creates: "{{ dotnet.install_dir }}/dotnet"
     - name: Add dotnet to system PATH
       lineinfile:
@@ -142,7 +141,9 @@
         mode: '0755'
     - name: Install latest version of gcm
       become_user: "{{ user }}"
-      ansible.builtin.command: "{{ dotnet.install_dir }}/dotnet tool install --tool-path {{ xdg_bin_home }} git-credential-manager"
+      ansible.builtin.command: 
+        cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path {{ xdg_bin_home }} git-credential-manager"
+        creates: "{{ xdg_bin_home }}/git-credential-manager"
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures
