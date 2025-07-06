@@ -3,11 +3,11 @@
   set_fact:
     cpu_arch: >-
       {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
-      amd64
+        amd64
       {% elif ansible_facts.architecture in ['aarch64', 'arm64'] %}
-      arm64
+        arm64
       {% else %}
-      unsupported
+        unsupported
       {% endif %}
 
 - name: Ensure user {{ user }} exists
@@ -212,7 +212,7 @@
     # - debug: installed_go_version.stdout
     - name: Download & Install latest version of Go
       ansible.builtin.unarchive:
-        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{cpu_arch}}.tar.gz"
+        src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{ cpu_arch | trim }}.tar.gz"
         dest: /usr/local
         remote_src: true
       when: latest_go_version.content != installed_go_version.stdout
