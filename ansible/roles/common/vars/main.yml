@@ -39,7 +39,6 @@ apt:
     - gnupg2 # free PGP replacement
     - gpg # free PGP replacement
     - software-properties-common # repo manager
-    - stow # GNU stow for managing dotfile install
 
   install:
     - build-essential # C compiling tools
@@ -70,6 +69,7 @@ apt:
     - python3-venv # python virtual environments
     - ripgrep # blazing-fast replacement for grep (written in Rust)
     - rsync # faster way to scp files, only syncing changes
+    - stow # GNU stow for managing dotfile install
     - tcpdump # command line packet capture
     - terminator # best terminal emulator
     - tmux # terminal multiplexer
