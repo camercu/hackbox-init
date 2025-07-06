@@ -43,7 +43,7 @@ apt:
     - docker-doc # docker documentation
     - docker.io # docker containers
     - dos2unix # fix line endings
-    - delta # diff viewer
+    - git-delta # diff viewer
     - entr # run arbitrary commands on file change
     - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
