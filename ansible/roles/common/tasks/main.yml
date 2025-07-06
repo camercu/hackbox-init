@@ -9,6 +9,9 @@
     update_password: on_create # keep user's password if already set
     password: "{{ 'changeme' | password_hash('sha512', 65536 | random(seed=user) | string) }}"
 
+- name: Include XDG vars
+  ansible.builtin.include_vars: xdg_dir_vars.yml
+
 - name: Create XDG Directories
   ansible.builtin.import_tasks:
     file: xdg_dirs.yml
