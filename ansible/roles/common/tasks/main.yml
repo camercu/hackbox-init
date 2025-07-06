@@ -105,21 +105,32 @@
   block:
     - name: Ensure .NET dependencies are installed
       ansible.builtin.apt:
-        name: "{{ apt.dotnet_deps }}"
+        name: "{{ dotnet.deps }}"
         state: present
         update_cache: false
+    - name: Create .NET install directory
+      ansible.builtin.file:
+        path: "{{ dotnet.install_dir }}"
+        state: directory
+        mode: '0755'
     - name: Download dotnet-install script
       ansible.builtin.get_url:
         url: https://dot.net/v1/dotnet-install.sh
         dest: "/tmp/dotnet-install.sh"
         mode: '0755'
     - name: Run dotnet-install script
-      ansible.builtin.shell: |
-        "/tmp/dotnet-install.sh" --version latest --install-dir {{ xdg_bin_home }}
+      ansible.builtin.command: |
+        "/tmp/dotnet-install.sh" --version latest --install-dir {{ dotnet.install_dir }}
       args:
-        creates: "{{ xdg_bin_home }}/dotnet"
+        creates: "{{ dotnet.install_dir }}/dotnet"
+    - name: Add dotnet to system PATH
+      lineinfile:
+        path: /etc/profile.d/dotnet.sh
+        line: 'export PATH=$PATH:{{ dotnet.install_dir }}'
+        create: yes
+        mode: '0755'
     - name: Install latest version of gcm
-      ansible.builtin.command: dotnet tool install -g git-credential-manager --tool-path {{ xdg_bin_home }}
+      ansible.builtin.command: dotnet tool install -g git-credential-manager --tool-path {{ dotnet.install_dir }}/bin
       notify: Configure git-credential-manager
 
 - name: Get foreign dpkg architectures

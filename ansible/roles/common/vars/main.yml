@@ -16,18 +16,12 @@ pip:
     - ansible # automated configuration tool
     - uv # pip replacement, allows multiple python versions
 
-apt:
-  pre_install: # required to add new apt repos/signing keys
-    - apt-transport-https # https support for apt
-    - curl # also an autorecon and pyenv dependency
-    - gnupg2 # free PGP replacement
-    - gpg # free PGP replacement
-    - software-properties-common # repo manager
-
+dotnet:
+  install_dir: /usr/local/share/dotnet
   # dependencies for .NET 12.x
   # https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian?tabs=dotnet9#dependencies
   # https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-decision#dependencies
-  dotnet_deps:
+  deps:
     - ca-certificates
     - libc6
     - libgcc-s1
@@ -37,6 +31,14 @@ apt:
     - libssl3
     - libstdc++6
     - zlib1g
+
+apt:
+  pre_install: # required to add new apt repos/signing keys
+    - apt-transport-https # https support for apt
+    - curl # also an autorecon and pyenv dependency
+    - gnupg2 # free PGP replacement
+    - gpg # free PGP replacement
+    - software-properties-common # repo manager
 
   install:
     - build-essential # C compiling tools
