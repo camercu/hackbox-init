@@ -42,7 +42,6 @@ apt:
 
   install:
     - bat # cat alternative
-    - bottom # top alternative; command 'btm'
     - build-essential # C compiling tools
     - code # VSCode
     - docker-doc # docker documentation
