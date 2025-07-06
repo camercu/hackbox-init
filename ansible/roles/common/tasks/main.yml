@@ -3,11 +3,11 @@
   set_fact:
     cpu_arch: >-
       {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
-        amd64
+      amd64
       {% elif ansible_facts.architecture in ['aarch64', 'arm64'] %}
-        arm64
+      arm64
       {% else %}
-        unsupported
+      unsupported
       {% endif %}
 
 - name: Ensure user {{ user }} exists
