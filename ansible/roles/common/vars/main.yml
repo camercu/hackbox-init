@@ -94,7 +94,7 @@ ohmyzsh:
   dir: "{{ homedir }}/.oh-my-zsh"
 
 gcm: # git-credential-manager
-  install_dir: /usr/local/share/gcm
+  install_dir: /usr/local/bin
 
 vscode:
   extensions:
