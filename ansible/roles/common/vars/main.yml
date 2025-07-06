@@ -47,7 +47,6 @@ apt:
     - docker-doc # docker documentation
     - docker.io # docker containers
     - dos2unix # fix line endings
-    - dust # du alternative (disk usage)
     - delta # diff viewer
     - entr # run arbitrary commands on file change
     - fd-find # blazing-fast replacement for find command (in Rust)
