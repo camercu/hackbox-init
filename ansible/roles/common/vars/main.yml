@@ -51,6 +51,7 @@ apt:
     - gdb # GNU Debugger
     - git # version control
     - jq # JSON query tool for cli
+    - lazygit # easy TUI for git
     - lsd # better version of `ls`
     - make # code build tool
     - ncat # better netcat, with ssl support
