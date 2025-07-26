@@ -1,0 +1,5 @@
+---
+apt:
+  install:
+    - bettercap
+    - kali-tools-wireless # 802.11, Bluetooth, RFID & SDR. https://www.kali.org/tools/kali-meta/#kali-tools-wireless

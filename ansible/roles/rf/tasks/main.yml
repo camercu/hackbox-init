@@ -1,0 +1,10 @@
+---
+- name: "Install RF apt packages: {{ apt.install | join(', ') }}"
+  ansible.builtin.apt:
+    name: "{{ apt.install }}"
+    state: latest
+    update_cache: true
+  tags:
+    - apt
+    - update
+    - rf

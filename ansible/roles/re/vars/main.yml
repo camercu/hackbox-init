@@ -21,6 +21,7 @@ apt:
     - ghidra-data # databases to improve ghidra
     - jadx # Dex to java decompiler
     - jd-gui # java decompiler
+    - kali-tools-reverse-engineering # https://www.kali.org/tools/kali-meta/#kali-tools-reverse-engineering
     - libcapstone4 # dev libs for disassembly
     - nasm # assembler
     - python3-capstone # multi-arch disassembly framework
