@@ -1,5 +1,17 @@
 ---
 apt:
   install:
-    - bettercap
+    - bettercap # wifi, BLE, HID, CAN bus swiss-army knife
     - kali-tools-wireless # 802.11, Bluetooth, RFID & SDR. https://www.kali.org/tools/kali-meta/#kali-tools-wireless
+    - libairspy-dev # universal radio hacker dependency
+    - libhackrf-dev # universal radio hacker dependency
+    - librtlsdr-dev # universal radio hacker dependency
+    - libuhd-dev # universal radio hacker dependency
+    - python3-numpy # universal radio hacker dependency
+    - python3-psutil # universal radio hacker dependency
+    - python3-zmq # universal radio hacker dependency
+    - python3-pyqt5 # universal radio hacker dependency
+    - g++ # universal radio hacker dependency
+    - libpython3-dev # universal radio hacker dependency
+    - python3-pip # universal radio hacker dependency
+    - cython3 # universal radio hacker dependency
