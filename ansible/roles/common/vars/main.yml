@@ -79,6 +79,7 @@ apt:
     - tree # view file tree in cmdline
     - tree-sitter-cli # language parsers for Neovim
     - vim # great CLI text editor
+    - wezterm # Wezterm terminal emulator
     - wget # http requests
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture

@@ -117,6 +117,22 @@
   tags:
     - vscode
 
+- name: Add Wezterm Apt Repo
+  ansible.builtin.deb822_repository:
+    name: wezterm
+    uris: https://apt.fury.io/wez/
+    signed_by: https://apt.fury.io/wez/gpg.key
+    types: deb
+    suites: '*'
+    components: '*'
+    architectures:
+      - amd64
+      - arm64
+      - armhf
+  tags:
+    - wezterm
+
+
 - name: Install git-credential-manager
   tags:
     - gcm
