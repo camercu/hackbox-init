@@ -75,16 +75,20 @@ python3 -m pip install -U ansible || apt install -y python3-ansible-runner pytho
 info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
 
+HOME_DIR="/home/kali"
+if [ -z "$SUDO_HOME" ]; then
+  HOME_DIR="$SUDO_HOME"
+fi
 if [[ "$hypervisor" == vmware* && -d /mnt/share/.dotfiles ]]; then
   info "Swapping out dotfile dir for shared copy..."
-  [[ -d /home/kali/.dotfiles && ! -L /home/kali/.dotfiles ]] && rm -rf /home/kali/.dotfiles
-  ln -sf /mnt/share/.dotfiles /home/kali/.dotfiles
+  [[ -d "$HOME_DIR/.dotfiles" && ! -L "$HOME_DIR/.dotfiles" ]] && rm -rf "$HOME_DIR/.dotfiles"
+  ln -sf /mnt/share/.dotfiles "$HOME_DIR/.dotfiles"
 fi
 
 if [[ "$hypervisor" == vmware* && -d /mnt/share/hackbox-init ]]; then
   info "Swapping out hackbox-init dir for shared copy..."
-  [[ -d /home/kali/hackbox-init && ! -L /home/kali/hackbox-init ]] && rm -rf /home/kali/hackbox-init
-  ln -sf /mnt/share/hackbox-init /home/kali/hackbox-init
+  [[ -d "$HOME_DIR/hackbox-init" && ! -L "$HOME_DIR/hackbox-init" ]] && rm -rf "$HOME_DIR/hackbox-init"
+  ln -sf /mnt/share/hackbox-init "$HOME_DIR/hackbox-init"
 fi
 
 success "Done!"
