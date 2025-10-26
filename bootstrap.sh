@@ -27,6 +27,13 @@ function success {
   echo "${GREEN}[+] ${*}${CLEAR}"
 }
 
+function in_vm {
+  if grep -q 'CPU Flags' /proc/cpuinfo; then
+    grep flags /proc/cpuinfo 2>/dev/null | grep -q hypervisor && return 0 || return 1
+  fi
+  grep -qiE 'kvm|vmware|vbox|hyperv|qemu|virtualbox|virtual machine' /sys/class/dmi/id/product_family
+}
+
 if [[ "$UID" != 0 ]]; then
   warn "This script must be run as root!"
   info "Re-trying with sudo..."
@@ -37,10 +44,9 @@ fi
 info "Updating apt cache..."
 apt update
 
-in_vm=$(grep flags /proc/cpuinfo 2>/dev/null | grep -q hypervisor && echo true || echo false)
 hypervisor="N/A"
-if [[ $in_vm == true ]]; then
-  hypervisor="$(awk '{ print tolower($0) }' /sys/devices/virtual/dmi/id/product_name)"
+if in_vm; then
+  hypervisor="$(awk '{ print tolower($0) }' /sys/devices/virtual/dmi/id/product_family)"
   if [[ "$hypervisor" == vmware* ]]; then
     info "Ensuring VMWare Tools are installed..."
     apt install -y open-vm-tools fuse3
@@ -82,4 +88,3 @@ if [[ "$hypervisor" == vmware* && -d /mnt/share/hackbox-init ]]; then
 fi
 
 success "Done!"
-
