@@ -76,7 +76,7 @@ info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
 
 HOME_DIR="/home/kali"
-if [ -z "$SUDO_HOME" ]; then
+if [ -n "$SUDO_HOME" ]; then
   HOME_DIR="$SUDO_HOME"
 fi
 if [[ "$hypervisor" == vmware* && -d /mnt/share/.dotfiles ]]; then
