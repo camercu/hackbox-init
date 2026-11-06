@@ -27,11 +27,10 @@ function success {
   echo "${GREEN}[+] ${*}${CLEAR}"
 }
 
-function in_vm {
-  if grep -q 'CPU Flags' /proc/cpuinfo; then
-    grep flags /proc/cpuinfo 2>/dev/null | grep -q hypervisor && return 0 || return 1
-  fi
-  grep -qiE 'kvm|vmware|vbox|hyperv|qemu|virtualbox|virtual machine' /sys/class/dmi/id/product_family
+# Prints the hypervisor name (e.g. "oracle" for VirtualBox, "vmware"), or
+# "none" on bare metal. DMI files do not exist on ARM guests, so ask systemd.
+function detect_hypervisor {
+  systemd-detect-virt --vm 2>/dev/null || true
 }
 
 if [[ "$UID" != 0 ]]; then
@@ -44,48 +43,41 @@ fi
 info "Updating apt cache..."
 apt update
 
-hypervisor="N/A"
-if in_vm; then
-  hypervisor="$(awk '{ print tolower($0) }' /sys/devices/virtual/dmi/id/product_family)"
-  if [[ "$hypervisor" == vmware* ]]; then
-    info "Ensuring VMWare Tools are installed..."
-    apt install -y open-vm-tools fuse3
+hypervisor="$(detect_hypervisor)"
+info "Hypervisor: $hypervisor"
+if [[ "$hypervisor" == vmware ]]; then
+  info "Ensuring VMWare Tools are installed..."
+  apt install -y open-vm-tools fuse3
 
-    info "Ensuring shared folder is mounted..."
-    host_dir="$(awk '{print $1}' "$HERE/fstab")"
-    if ! grep -qF "$host_dir" /etc/fstab; then
-      cat /etc/fstab "$HERE/fstab" >/tmp/fstab.new
-      mv /tmp/fstab.new /etc/fstab
-      mountpt="$(awk '{print $2}' "$HERE/fstab")"
-      mkdir -p "$mountpt"
-      mount -a
-    fi
-  elif [[ "$hypervisor" == "virtualbox" ]]; then
-    info "Installing prerequisites for VirtalBox Guest Additions..."
-    apt install -y build-essential dkms #linux-headers-$(uname -r)
+  info "Ensuring shared folder is mounted..."
+  host_dir="$(awk '{print $1}' "$HERE/fstab")"
+  if ! grep -qF "$host_dir" /etc/fstab; then
+    cat /etc/fstab "$HERE/fstab" >/tmp/fstab.new
+    mv /tmp/fstab.new /etc/fstab
+    mountpt="$(awk '{print $2}' "$HERE/fstab")"
+    mkdir -p "$mountpt"
+    mount -a
   fi
+elif [[ "$hypervisor" == oracle ]]; then
+  info "Installing prerequisites for VirtualBox Guest Additions..."
+  apt install -y build-essential dkms
 fi
 
-info "Installing prerequisites for Ansible..."
-apt install -y python3 python3-pip
-
+# Kali's python is externally managed (PEP 668): pip install fails, use apt.
 info "Installing Ansible..."
-python3 -m pip install -U ansible || apt install -y python3-ansible-runner python3-debian
+apt install -y python3 ansible-core
 
 info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
 
-HOME_DIR="/home/kali"
-if [ -n "$SUDO_HOME" ]; then
-  HOME_DIR="$SUDO_HOME"
-fi
-if [[ "$hypervisor" == vmware* && -d /mnt/share/.dotfiles ]]; then
+HOME_DIR="$(getent passwd "${SUDO_USER:-root}" | cut -d: -f6)"
+if [[ "$hypervisor" == vmware && -d /mnt/share/.dotfiles ]]; then
   info "Swapping out dotfile dir for shared copy..."
   [[ -d "$HOME_DIR/.dotfiles" && ! -L "$HOME_DIR/.dotfiles" ]] && rm -rf "$HOME_DIR/.dotfiles"
   ln -sf /mnt/share/.dotfiles "$HOME_DIR/.dotfiles"
 fi
 
-if [[ "$hypervisor" == vmware* && -d /mnt/share/hackbox-init ]]; then
+if [[ "$hypervisor" == vmware && -d /mnt/share/hackbox-init ]]; then
   info "Swapping out hackbox-init dir for shared copy..."
   [[ -d "$HOME_DIR/hackbox-init" && ! -L "$HOME_DIR/hackbox-init" ]] && rm -rf "$HOME_DIR/hackbox-init"
   ln -sf /mnt/share/hackbox-init "$HOME_DIR/hackbox-init"
