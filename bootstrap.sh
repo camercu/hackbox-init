@@ -68,7 +68,7 @@ info "Installing Ansible..."
 apt install -y python3 ansible-core
 
 info "Running Ansible script..."
-ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml"
+ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml" "$@"
 
 HOME_DIR="$(getent passwd "${SUDO_USER:-root}" | cut -d: -f6)"
 if [[ "$hypervisor" == vmware && -d /mnt/share/.dotfiles ]]; then
