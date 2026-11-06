@@ -206,26 +206,51 @@
       ansible.builtin.command:
         cmd: /tmp/nix-installer.sh install --no-confirm
         creates: "{{ nix.daemon_profile }}"
+    # With no desktop session, Home Manager starts a private bus with nix's
+    # dbus-daemon to apply xfconf settings. That binary reads its config from
+    # /etc/dbus-1; Debian ships it in /usr/share/dbus-1 only.
+    - name: Check for dbus session config where nix's dbus-daemon looks
+      ansible.builtin.stat:
+        path: /etc/dbus-1/session.conf
+      register: etc_dbus_session_conf
+    - name: Point nix's dbus-daemon at Debian's session config
+      ansible.builtin.file:
+        src: /usr/share/dbus-1/session.conf
+        dest: /etc/dbus-1/session.conf
+        state: link
+      when: not etc_dbus_session_conf.stat.exists
 
 # The dotfiles installer links configs (stow) and, with USE_HOME_MANAGER=1,
 # applies the Home Manager config whose hosts.tsv row matches `hostname -s`.
 # It is idempotent, so run it every time to pick up dotfiles changes.
 - name: Install dotfiles
-  become_user: "{{ user }}"
   tags:
     - dotfiles
   block:
     - name: Download dotfiles repo
+      become_user: "{{ user }}"
       ansible.builtin.git:
         repo: "{{ dotfiles.repo }}"
         dest: "{{ dotfiles.dir }}"
         update: false # the user may have local work in it; `maintain` pulls
+    # A logged-in desktop session gets the xfconf settings live; its xfconfd
+    # would otherwise overwrite values written on a private bus at logout.
     - name: Run dotfiles installer with Home Manager
+      become_user: "{{ user }}"
       ansible.builtin.shell:
         chdir: "{{ dotfiles.dir }}"
-        cmd: ". {{ nix.daemon_profile }} && ./install.sh"
+        cmd: |
+          bus="/run/user/$(id -u)/bus"
+          [ -S "$bus" ] && export DBUS_SESSION_BUS_ADDRESS="unix:path=$bus"
+          . {{ nix.daemon_profile }} && ./install.sh
       environment:
         USE_HOME_MANAGER: "1"
+    # Links host GPU drivers for nix GUI apps (Ghostty). The script is
+    # idempotent and its store path changes with the drivers: run every time.
+    - name: Set up host GPU drivers for nix packages
+      ansible.builtin.command:
+        cmd: "{{ homedir }}/.nix-profile/bin/non-nixos-gpu-setup"
+        removes: "{{ homedir }}/.nix-profile/bin/non-nixos-gpu-setup"
 
 - name: Install latest release of Golang
   tags:
