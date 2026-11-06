@@ -320,7 +320,8 @@
   ansible.builtin.uri:
     url: "{{ item }}"
     dest: /usr/local/share/fonts/
-    creates: /usr/local/share/fonts/MesloLGS%20NF%20Regular.ttf
+    # uri saves the file under its decoded name, with spaces
+    creates: "/usr/local/share/fonts/{{ item | basename | urldecode }}"
   loop:
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
     - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
