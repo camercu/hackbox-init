@@ -60,7 +60,10 @@ if [[ "$hypervisor" == vmware ]]; then
   fi
 elif [[ "$hypervisor" == oracle ]]; then
   info "Installing prerequisites for VirtualBox Guest Additions..."
-  apt install -y build-essential dkms
+  # Headers for the running kernel build the additions now; the arch
+  # metapackage keeps headers in step with kernel upgrades so DKMS rebuilds.
+  apt install -y build-essential dkms "linux-headers-$(uname -r)" \
+    "linux-headers-$(dpkg --print-architecture)"
 fi
 
 # Kali's python is externally managed (PEP 668): pip install fails, use apt.
