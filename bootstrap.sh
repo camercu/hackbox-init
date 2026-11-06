@@ -5,11 +5,12 @@ set -e
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-CLEAR=$(tput sgr0)
+# Colors are optional: tput fails without a usable TERM (cron, nohup, CI).
+RED=$(tput setaf 1 2>/dev/null || true)
+GREEN=$(tput setaf 2 2>/dev/null || true)
+YELLOW=$(tput setaf 3 2>/dev/null || true)
+BLUE=$(tput setaf 4 2>/dev/null || true)
+CLEAR=$(tput sgr0 2>/dev/null || true)
 
 function info {
   echo "${BLUE}[*] ${*}${CLEAR}"
