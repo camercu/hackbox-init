@@ -11,20 +11,21 @@ dotfiles:
   dir: "{{ homedir }}/.dotfiles"
   repo: "https://github.com/camercu/dotfiles"
 
+nix:
+  installer_url: https://install.determinate.systems/nix
+  daemon_profile: /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
 dotnet:
   install_dir: /usr/local/share/dotnet
-  # dependencies for .NET 12.x
-  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian?tabs=dotnet9#dependencies
-  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-decision#dependencies
+  # Runtime deps for .NET on Debian. Use unversioned -dev names: the runtime
+  # libs get renamed (libicu76 -> libicu78, libssl3 -> libssl3t64) and break
+  # this list. Essential libs (libc6, libgcc-s1, libstdc++6) are always present.
+  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian#dependencies
   deps:
     - ca-certificates
-    - libc6
-    - libgcc-s1
     - libgssapi-krb5-2
-    - libicu76
-    - liblttng-ust1
-    - libssl3
-    - libstdc++6
+    - libicu-dev
+    - libssl-dev
     - zlib1g
 
 apt:
@@ -59,7 +60,7 @@ apt:
     - nmap # autorecon dependency
     - openresolv # required for wireguard
     - openvpn # most common VPN for connecting to hacking sites
-    - p7zip-full # 7zip compression tools
+    - 7zip # 7zip compression tools (replaces p7zip-full)
     - perl # scripting language
     - pipx # python executable installer
     - procs # ps alternative
@@ -79,7 +80,6 @@ apt:
     - tree # view file tree in cmdline
     - tree-sitter-cli # language parsers for Neovim
     - vim # great CLI text editor
-    - wezterm # Wezterm terminal emulator
     - wget # http requests
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
@@ -90,10 +90,6 @@ apt:
 
 go:
   version_url: https://go.dev/dl/?mode=json
-
-ohmyzsh:
-  install_url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-  dir: "{{ homedir }}/.oh-my-zsh"
 
 gcm: # git-credential-manager
   install_dir: /usr/local/bin

@@ -117,22 +117,6 @@
   tags:
     - vscode
 
-- name: Add Wezterm Apt Repo
-  ansible.builtin.deb822_repository:
-    name: wezterm
-    uris: https://apt.fury.io/wez/
-    signed_by: https://apt.fury.io/wez/gpg.key
-    types: deb
-    suites: '*'
-    components: '*'
-    architectures:
-      - amd64
-      - arm64
-      - armhf
-  tags:
-    - wezterm
-
-
 - name: Install git-credential-manager
   tags:
     - gcm
@@ -190,7 +174,9 @@
 #     var: dpkg_architectures.stdout
 - name: Add i386 architecture to dpkg
   ansible.builtin.command: dpkg --add-architecture i386
-  when: "'i386' not in dpkg_architectures.stdout"
+  when:
+    - cpu_arch1 | trim == 'amd64'
+    - "'i386' not in dpkg_architectures.stdout"
   tags:
     - apt
 
@@ -204,6 +190,26 @@
     - apt
     - update
 
+# Nix is a system install (needs root), so do it here rather than let the
+# dotfiles installer prompt for sudo as the user.
+- name: Install Nix (Determinate installer)
+  tags:
+    - nix
+    - dotfiles
+  block:
+    - name: Fetch Nix installer
+      ansible.builtin.get_url:
+        url: "{{ nix.installer_url }}"
+        dest: /tmp/nix-installer.sh
+        mode: '0755'
+    - name: Run Nix installer
+      ansible.builtin.command:
+        cmd: /tmp/nix-installer.sh install --no-confirm
+        creates: "{{ nix.daemon_profile }}"
+
+# The dotfiles installer links configs (stow) and, with USE_HOME_MANAGER=1,
+# applies the Home Manager config whose hosts.tsv row matches `hostname -s`.
+# It is idempotent, so run it every time to pick up dotfiles changes.
 - name: Install dotfiles
   become_user: "{{ user }}"
   tags:
@@ -213,15 +219,13 @@
       ansible.builtin.git:
         repo: "{{ dotfiles.repo }}"
         dest: "{{ dotfiles.dir }}"
-    - name: Set dotfiles installer as executable
-      ansible.builtin.file:
-        path: "{{ dotfiles.dir }}/install.sh"
-        mode: 0750
-    - name: Run dotfiles installer
-      ansible.builtin.command:
+        update: false # the user may have local work in it; `maintain` pulls
+    - name: Run dotfiles installer with Home Manager
+      ansible.builtin.shell:
         chdir: "{{ dotfiles.dir }}"
-        cmd: "./install.sh"
-        creates: "{{ homedir }}/.gitconfig-aliases"
+        cmd: ". {{ nix.daemon_profile }} && ./install.sh"
+      environment:
+        USE_HOME_MANAGER: "1"
 
 - name: Install latest release of Golang
   tags:
@@ -232,7 +236,7 @@
       ansible.builtin.shell:
         cmd: "/usr/local/go/bin/go version | awk '{print $3}'"
       register: installed_go_version
-      changed_when: installed_go_version.stdout != ''
+      changed_when: false
       failed_when: false
       become_user: "{{ user }}"
     - name: Find latest release version of Go
@@ -242,14 +246,17 @@
         follow_redirects: safe
         return_content: true
       register: latest_go_version
-    # - debug: latest_go_version.content
-    # - debug: installed_go_version.stdout
+    - name: Remove old Go install (unarchive over it leaves stale files)
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+      when: latest_go_version.json[0].version != installed_go_version.stdout
     - name: Download & Install latest version of Go
       ansible.builtin.unarchive:
         src: "https://golang.org/dl/{{ latest_go_version.json[0].version }}.linux-{{ cpu_arch1 | trim }}.tar.gz"
         dest: /usr/local
         remote_src: true
-      when: latest_go_version.content != installed_go_version.stdout
+      when: latest_go_version.json[0].version != installed_go_version.stdout
 
 - name: Install Rust
   become_user: "{{ user }}"
@@ -283,44 +290,6 @@
   tags:
     - uv
     - update
-
-- name: Configure Oh-My-Zsh
-  become_user: "{{ user }}"
-  tags:
-    - zsh
-    - ohmyzsh
-  block:
-    - name: "Installing Oh-My-Zsh for {{ user }} user"
-      block:
-        - name: "Check if Oh-My-Zsh installed for {{ user }} user"
-          ansible.builtin.stat:
-            path: "{{ ohmyzsh.dir }}"
-          register: ohmyzsh_dir
-        - name: Fetch oh-my-zsh
-          ansible.builtin.uri:
-            url: "{{ ohmyzsh.install_url }}"
-            return_content: true
-          when: not ohmyzsh_dir.stat.exists
-          register: ohmyzsh_installer
-        - name: Run oh-my-zsh installer
-          ansible.builtin.command:
-            cmd: sh -s
-            stdin: "{{ ohmyzsh_installer.content }}"
-            creates: "{{ ohmyzsh.dir }}"
-          when: not ohmyzsh_dir.stat.exists
-
-    - name: Install zsh-autosuggestions plugin
-      ansible.builtin.git:
-        repo: https://github.com/zsh-users/zsh-autosuggestions
-        dest: "{{ homedir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-    - name: Install zsh-syntax-highlighting plugin
-      ansible.builtin.git:
-        repo: https://github.com/zsh-users/zsh-syntax-highlighting
-        dest: "{{ homedir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-    - name: Install Powerlevel10k theme
-      ansible.builtin.git:
-        repo: https://github.com/romkatv/powerlevel10k.git
-        dest: "{{ homedir }}/.oh-my-zsh/custom/themes/powerlevel10k"
 
 - name: Install Meslo Nerd fonts
   ansible.builtin.uri:
