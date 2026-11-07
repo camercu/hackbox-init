@@ -86,12 +86,28 @@
     - update
 
 - name: Include Apt deb-src repos
-  ansible.builtin.apt_repository:
-    repo: deb-src http://http.kali.org/kali kali-rolling main contrib non-free
-    state: present
   when: ansible_facts.distribution == "Kali"
   tags:
     - apt
+  block:
+    - name: Add Kali deb-src repo
+      ansible.builtin.deb822_repository:
+        name: kali-src
+        types: deb-src
+        uris: http://http.kali.org/kali
+        suites: kali-rolling
+        components:
+          - main
+          - contrib
+          - non-free
+          - non-free-firmware
+        signed_by: /usr/share/keyrings/kali-archive-keyring.gpg
+    # apt_repository (deprecated) wrote this one-line file; a second source
+    # for the same repo makes apt warn about duplicate entries.
+    - name: Remove the old one-line deb-src file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/http_kali_org_kali.list
+        state: absent
 
 - name: Install Apt tools for adding repos
   ansible.builtin.apt:
@@ -251,6 +267,18 @@
       ansible.builtin.command:
         cmd: "{{ homedir }}/.nix-profile/bin/non-nixos-gpu-setup"
         removes: "{{ homedir }}/.nix-profile/bin/non-nixos-gpu-setup"
+    # Dotfiles point the user's shells at the nix profile's terminal entries,
+    # but sudo resets the environment. Compile xterm-ghostty into
+    # /etc/terminfo, the local-admin dir every ncurses searches, for root.
+    - name: Install xterm-ghostty terminfo system-wide
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail &&
+          infocmp -x -A {{ homedir }}/.nix-profile/share/terminfo xterm-ghostty
+          | tic -x -o /etc/terminfo -
+        executable: /bin/bash
+        creates: /etc/terminfo/x/xterm-ghostty
+        removes: "{{ homedir }}/.nix-profile/share/terminfo/x/xterm-ghostty"
 
 - name: Install latest release of Golang
   tags:
