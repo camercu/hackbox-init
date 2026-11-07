@@ -1,4 +1,15 @@
 ---
+# `user` falls back to $USER, which is root when the playbook runs as root
+# without sudo. Root's home is /root, not /home/root, so stop here.
+- name: Check the target user is not root
+  tags:
+    - always
+  ansible.builtin.assert:
+    that: user != 'root'
+    fail_msg: >-
+      Target user is root. Run bootstrap.sh as your normal user, or pass
+      -e user=NAME.
+
 # Tagged `always`: later tasks in any tag (apt, go, uv, pentest) read these.
 - name: Get (normalized) CPU architecture
   tags:

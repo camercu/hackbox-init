@@ -1,3 +1,5 @@
 ---
-user: cr4nk
+# The user who ran bootstrap.sh: it re-runs itself under sudo, which sets
+# SUDO_USER. Override with `-e user=NAME`.
+user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
 homedir: "/home/{{ user }}"
