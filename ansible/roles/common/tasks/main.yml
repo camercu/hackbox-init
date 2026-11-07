@@ -208,6 +208,70 @@
       ansible.builtin.apt:
         deb: "/tmp/{{ common_ghostty_deb }}"
 
+# Clipboard, display resize and shared folders in VirtualBox. Kali packages
+# the additions only as the ISO (no guest-x11 build for arm64), so run its
+# installer. Detect the guest by its PCI device, vendor 0x80ee:
+# systemd-detect-virt says "none" on arm64 VirtualBox guests.
+- name: Install VirtualBox Guest Additions
+  tags:
+    - vbox
+  block:
+    - name: Look for the VirtualBox guest PCI device
+      ansible.builtin.shell:
+        cmd: "grep -lx 0x80ee {{ vbox_pci_devices }}/*/vendor"
+      register: common_vbox_device
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Install VirtualBox Guest Additions build deps
+      when: common_vbox_device.rc == 0
+      ansible.builtin.apt:
+        name:
+          - build-essential
+          - dkms
+          - "linux-headers-{{ ansible_facts.kernel }}"
+          # Keeps headers in step with kernel upgrades so DKMS rebuilds.
+          - "linux-headers-{{ cpu_arch1 | trim }}"
+          - virtualbox-guest-additions-iso
+        state: present
+        update_cache: true
+
+    - name: Read the Guest Additions ISO version
+      when: common_vbox_device.rc == 0
+      ansible.builtin.command:
+        cmd: dpkg-query -W -f=${Version} virtualbox-guest-additions-iso
+      register: common_vbox_iso_version
+      changed_when: false
+      check_mode: false
+
+    # The installer exits 2 when the new modules load only after a reboot.
+    - name: Run the Guest Additions installer
+      when: common_vbox_device.rc == 0
+      vars:
+        common_vbox_version: "{{ common_vbox_iso_version.stdout | regex_replace('-[^-]*$', '') }}"
+        common_vbox_run: >-
+          {{ 'VBoxLinuxAdditions-arm64.run' if cpu_arch1 | trim == 'arm64'
+             else 'VBoxLinuxAdditions.run' }}
+      ansible.builtin.shell:
+        cmd: |
+          set -eu
+          iso=$(mktemp -d)
+          trap 'umount "$iso"; rmdir "$iso"' EXIT
+          mount -o loop,ro /usr/share/virtualbox/VBoxGuestAdditions.iso "$iso"
+          rc=0
+          sh "$iso/{{ common_vbox_run }}" || rc=$?
+          [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ]
+        creates: "/opt/VBoxGuestAdditions-{{ common_vbox_version }}"
+      notify: Rebooting machine
+
+    - name: "Add the user to vboxsf to read shared folders: {{ user }}"
+      when: common_vbox_device.rc == 0
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: vboxsf
+        append: true
+
 - name: Install Firefox add-ons by policy
   tags:
     - firefox

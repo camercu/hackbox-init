@@ -28,8 +28,9 @@ function success {
   echo "${GREEN}[+] ${*}${CLEAR}"
 }
 
-# Prints the hypervisor name (e.g. "oracle" for VirtualBox, "vmware"), or
-# "none" on bare metal. DMI files do not exist on ARM guests, so ask systemd.
+# Prints the hypervisor name (e.g. "vmware"), or "none" on bare metal. DMI
+# files do not exist on ARM guests, so ask systemd. VirtualBox Guest Additions
+# install from Ansible (tag vbox): this reports "none" on arm64 VirtualBox.
 function detect_hypervisor {
   systemd-detect-virt --vm 2>/dev/null || true
 }
@@ -59,12 +60,6 @@ if [[ "$hypervisor" == vmware ]]; then
     mkdir -p "$mountpt"
     mount -a
   fi
-elif [[ "$hypervisor" == oracle ]]; then
-  info "Installing prerequisites for VirtualBox Guest Additions..."
-  # Headers for the running kernel build the additions now; the arch
-  # metapackage keeps headers in step with kernel upgrades so DKMS rebuilds.
-  apt install -y build-essential dkms "linux-headers-$(uname -r)" \
-    "linux-headers-$(dpkg --print-architecture)"
 fi
 
 # Kali's python is externally managed (PEP 668): pip install fails, use apt.

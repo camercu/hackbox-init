@@ -15,6 +15,9 @@ firefox_policies_dir: /etc/firefox/policies
 # Prefix for the old .NET install paths; tests point it at a temp dir.
 legacy_dotnet_root: ""
 
+# Where the kernel lists PCI devices; tests point it at a fake tree.
+vbox_pci_devices: /sys/bus/pci/devices
+
 uv_bin_dir: "{{ homedir }}/.local/bin"
 
 sshkey_touchfile: /etc/ssh/sshkeys-regenerated
