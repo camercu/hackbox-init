@@ -10,6 +10,7 @@
     - dev
 
 - name: "Install python dev packages: {{ pip.install | join(', ') }}"
+  become: true
   become_user: "{{ user }}"
   ansible.builtin.pip:
     name: "{{ pip.install }}"

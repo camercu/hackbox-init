@@ -12,3 +12,13 @@ up someone else.
 
 If setting this up in a VM and desiring a shared folder with the host, share
 the folder with the name `vm-share`.
+
+## Checks
+
+Lint the playbook before committing:
+
+```sh
+nix-shell -p ansible-lint --run ansible-lint
+```
+
+`.ansible-lint` lists the rules skipped on purpose and why.

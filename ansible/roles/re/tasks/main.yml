@@ -10,6 +10,7 @@
     - re
 
 - name: "Install RE python packages: {{ pip.install | join(', ') }}"
+  become: true
   become_user: "{{ user }}"
   ansible.builtin.pip:
     name: "{{ pip.install }}"
@@ -20,12 +21,14 @@
     - re
 
 - name: Install pwndbg
+  become: true
   become_user: "{{ user }}"
   tags:
     - re
     - pwndbg
   block:
-    - name: Download pwndbg
+    # No version pin: track pwndbg's default branch.
+    - name: Download pwndbg # noqa: latest[git]
       ansible.builtin.git:
         repo: "{{ pwndbg.repo }}"
         dest: "{{ pwndbg.dir }}"
@@ -38,9 +41,10 @@
     - name: Set pwndbg installer as executable
       ansible.builtin.file:
         path: "{{ pwndbg.dir }}/setup.sh"
-        mode: 0755
+        mode: '0755'
     - name: Install pwndbg
       ansible.builtin.command:
         chdir: "{{ pwndbg.dir }}"
         cmd: "./setup.sh"
       when: "'pwndbg' not in pwndbg_inuse.stdout"
+      changed_when: true # `when` already skips hosts using pwndbg

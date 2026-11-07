@@ -26,11 +26,10 @@
   ansible.builtin.file:
     mode: '0755'
     path: "{{ xdg_state_home }}"
-    state: directory  
+    state: directory
 
 - name: Ensure XDG_BIN_HOME directory exists.
   ansible.builtin.file:
     mode: '0755'
     path: "{{ xdg_bin_home }}"
-    state: directory  
-
+    state: directory

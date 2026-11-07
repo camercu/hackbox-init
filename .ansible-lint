@@ -1,0 +1,10 @@
+---
+# Rules skipped on purpose. Each one conflicts with a choice this repo makes.
+skip_list:
+  # A hack box wants current tools: `state: latest` is what the `update` tag
+  # is for.
+  - package-latest
+  # Facts like cpu_arch1 are set in `common` and read by every role, and the
+  # per-role `apt`/`pip` vars share one shape. A `common_` prefix would
+  # mislabel them.
+  - var-naming[no-role-prefix]

@@ -7,12 +7,13 @@
 
 - name: Refresh font cache
   ansible.builtin.command: fc-cache -fv
+  changed_when: true # handler: runs only when notified
 
 - name: Update database for locate command
   ansible.builtin.command:
     cmd: updatedb
+  changed_when: true # handler: runs only when notified
 
 - name: Rebooting machine
   ansible.builtin.reboot:
   when: "ansible_connection != 'local'"
-

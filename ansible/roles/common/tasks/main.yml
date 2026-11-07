@@ -14,7 +14,7 @@
 - name: Get (normalized) CPU architecture
   tags:
     - always
-  set_fact:
+  ansible.builtin.set_fact:
     cpu_arch1: >-
       {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
         amd64
@@ -32,7 +32,7 @@
         unsupported
       {% endif %}
 
-- name: Ensure user {{ user }} exists
+- name: "Ensure target user exists: {{ user }}"
   ansible.builtin.user:
     name: "{{ user }}"
     shell: /bin/zsh # way better than vanilla bash
@@ -87,7 +87,7 @@
       ansible.builtin.file:
         path: "{{ sshkey_touchfile }}"
         state: touch
-        mode: 0640
+        mode: '0640'
 
 - name: Apt full-upgrade
   ansible.builtin.apt:
@@ -190,7 +190,7 @@
         state: directory
         mode: '0755'
     - name: Install latest version of git-credential-manager
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path {{ gcm.install_dir }} git-credential-manager"
         creates: "{{ gcm.install_dir }}/git-credential-manager"
 
@@ -204,6 +204,7 @@
 #     var: dpkg_architectures.stdout
 - name: Add i386 architecture to dpkg
   ansible.builtin.command: dpkg --add-architecture i386
+  changed_when: true # `when` already skips hosts that have i386
   when:
     - cpu_arch1 | trim == 'amd64'
     - "'i386' not in dpkg_architectures.stdout"
@@ -257,7 +258,9 @@
   tags:
     - dotfiles
   block:
-    - name: Download dotfiles repo
+    # No version pin: clone the default branch once, never move it.
+    - name: Download dotfiles repo # noqa: latest[git]
+      become: true
       become_user: "{{ user }}"
       ansible.builtin.git:
         repo: "{{ dotfiles.repo }}"
@@ -265,7 +268,10 @@
         update: false # the user may have local work in it; `maintain` pulls
     # A logged-in desktop session gets the xfconf settings live; its xfconfd
     # would otherwise overwrite values written on a private bus at logout.
-    - name: Run dotfiles installer with Home Manager
+    # install.sh reports no change status, so the task cannot say whether
+    # it changed anything.
+    - name: Run dotfiles installer with Home Manager # noqa: no-changed-when
+      become: true
       become_user: "{{ user }}"
       ansible.builtin.shell:
         chdir: "{{ dotfiles.dir }}"
@@ -301,10 +307,12 @@
   block:
     - name: Check currently installed version of Go
       ansible.builtin.shell:
-        cmd: "/usr/local/go/bin/go version | awk '{print $3}'"
+        cmd: "set -o pipefail && /usr/local/go/bin/go version | awk '{print $3}'"
+        executable: /bin/bash
       register: installed_go_version
       changed_when: false
       failed_when: false
+      become: true
       become_user: "{{ user }}"
     - name: Find latest release version of Go
       ansible.builtin.uri:
@@ -326,27 +334,30 @@
       when: latest_go_version.json[0].version != installed_go_version.stdout
 
 - name: Install Rust
+  become: true
   become_user: "{{ user }}"
   tags:
     - rust
   block:
-    - name: "Check if Rust installed for {{ user }} user"
+    - name: "Check if Rust is installed for user {{ user }}"
       ansible.builtin.stat:
         path: "{{ homedir }}/.cargo"
       register: cargo_dir
     - name: Fetch rustup
       ansible.builtin.uri:
         url: https://sh.rustup.rs
-        return_content: yes
+        return_content: true
       when: not cargo_dir.stat.exists
       register: rustup_installer
     - name: Run rustup installer
       ansible.builtin.command:
         cmd: sh -s -- -y
         stdin: "{{ rustup_installer.content }}"
+      changed_when: true # `when` already skips hosts that have ~/.cargo
       when: not cargo_dir.stat.exists
 
 - name: "Install uv (pip replacement)"
+  become: true
   become_user: "{{ user }}"
   ansible.builtin.unarchive:
     src: "https://github.com/astral-sh/uv/releases/latest/download/uv-{{ cpu_arch2 | trim }}-unknown-linux-gnu.tar.gz"
@@ -375,6 +386,7 @@
     - fonts
 
 - name: Install VSCode extensions
+  become: true
   become_user: "{{ user }}"
   ansible.builtin.command:
     cmd: "code --install-extension {{ item }}"
