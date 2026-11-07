@@ -260,22 +260,30 @@
       ansible.builtin.command:
         cmd: /tmp/nix-installer.sh install --no-confirm
         creates: "{{ nix.daemon_profile }}"
-    # With no desktop session, Home Manager starts a private bus with nix's
-    # dbus-daemon to apply xfconf settings. That binary reads its config from
-    # /etc/dbus-1; Debian ships it in /usr/share/dbus-1 only.
-    - name: Check for dbus session config where nix's dbus-daemon looks
+    # An earlier version linked /etc/dbus-1/session.conf to Debian's
+    # /usr/share/dbus-1/session.conf. That file includes the /etc one, so
+    # every session bus failed with "Circular inclusion" and desktop login
+    # broke ("unable to contact settings server"). Remove the link.
+    - name: Check for the old looping dbus session config link
       ansible.builtin.stat:
         path: /etc/dbus-1/session.conf
-      register: etc_dbus_session_conf
-    - name: Point nix's dbus-daemon at Debian's session config
+      register: common_etc_dbus_session_conf
+    - name: Remove the old looping dbus session config link
       ansible.builtin.file:
-        src: /usr/share/dbus-1/session.conf
-        dest: /etc/dbus-1/session.conf
-        state: link
-      when: not etc_dbus_session_conf.stat.exists
+        path: /etc/dbus-1/session.conf
+        state: absent
+      when:
+        - common_etc_dbus_session_conf.stat.islnk | default(false)
+        - common_etc_dbus_session_conf.stat.lnk_target == '/usr/share/dbus-1/session.conf'
+    # Desktop login needs a session bus. Fail here, not at the next login.
+    - name: Check a dbus session bus can start
+      ansible.builtin.command:
+        cmd: timeout 10 /usr/bin/dbus-run-session -- true
+      changed_when: false
 
 # The dotfiles installer links configs (stow) and, with USE_HOME_MANAGER=1,
-# applies the Home Manager config whose hosts.tsv row matches `hostname -s`.
+# applies the Home Manager config whose hosts.tsv row matches `user@host`,
+# else the bare `hostname -s`.
 # It is idempotent, so run it every time to pick up dotfiles changes.
 - name: Install dotfiles
   tags:
@@ -291,6 +299,9 @@
         update: false # the user may have local work in it; `maintain` pulls
     # A logged-in desktop session gets the xfconf settings live; its xfconfd
     # would otherwise overwrite values written on a private bus at logout.
+    # With no session, Debian's dbus-run-session provides the bus: Home
+    # Manager then uses it instead of starting nix's dbus-daemon, which
+    # finds no config on Debian.
     # install.sh reports no change status, so the task cannot say whether
     # it changed anything.
     - name: Run dotfiles installer with Home Manager # noqa: no-changed-when
@@ -299,9 +310,13 @@
       ansible.builtin.shell:
         chdir: "{{ dotfiles.dir }}"
         cmd: |
+          . {{ nix.daemon_profile }}
           bus="/run/user/$(id -u)/bus"
-          [ -S "$bus" ] && export DBUS_SESSION_BUS_ADDRESS="unix:path=$bus"
-          . {{ nix.daemon_profile }} && ./install.sh
+          if [ -S "$bus" ]; then
+            DBUS_SESSION_BUS_ADDRESS="unix:path=$bus" ./install.sh
+          else
+            /usr/bin/dbus-run-session -- ./install.sh
+          fi
       environment:
         USE_HOME_MANAGER: "1"
     # Links host GPU drivers for nix GUI apps (Ghostty). The script is
