@@ -309,11 +309,15 @@
       become_user: "{{ user }}"
       ansible.builtin.shell:
         chdir: "{{ dotfiles.dir }}"
+        # The socket file outlives a failed dbus.service, so ask the bus to
+        # answer before using it.
         cmd: |
           . {{ nix.daemon_profile }}
-          bus="/run/user/$(id -u)/bus"
-          if [ -S "$bus" ]; then
-            DBUS_SESSION_BUS_ADDRESS="unix:path=$bus" ./install.sh
+          bus="unix:path=/run/user/$(id -u)/bus"
+          if DBUS_SESSION_BUS_ADDRESS="$bus" dbus-send --session --print-reply \
+              --dest=org.freedesktop.DBus /org/freedesktop/DBus \
+              org.freedesktop.DBus.GetId >/dev/null 2>&1; then
+            DBUS_SESSION_BUS_ADDRESS="$bus" ./install.sh
           else
             /usr/bin/dbus-run-session -- ./install.sh
           fi
