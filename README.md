@@ -22,3 +22,9 @@ nix-shell -p ansible-lint --run ansible-lint
 ```
 
 `.ansible-lint` lists the rules skipped on purpose and why.
+
+Run the tests; they need only `ansible` and stay off the system:
+
+```sh
+for t in tests/*.sh; do "$t" || echo "FAILED: $t"; done
+```
