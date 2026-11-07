@@ -151,52 +151,20 @@
   tags:
     - vscode
 
-- name: Install git-credential-manager
+# git-credential-manager comes from nix (dotfiles). Earlier runs installed
+# it with a .NET SDK under /usr/local; remove both, about 1.2 GB.
+- name: Remove the old .NET git-credential-manager install
   tags:
     - gcm
-    - apt
-  block:
-    - name: Ensure .NET dependencies are installed
-      ansible.builtin.apt:
-        name: "{{ dotnet.deps }}"
-        state: present
-        update_cache: false
-    - name: Create .NET install directory
-      ansible.builtin.file:
-        path: "{{ dotnet.install_dir }}"
-        state: directory
-        mode: '0755'
-    - name: Download dotnet-install script
-      ansible.builtin.get_url:
-        url: https://dot.net/v1/dotnet-install.sh
-        dest: "/tmp/dotnet-install.sh"
-        mode: '0755'
-    - name: Run dotnet-install script
-      ansible.builtin.command:
-        cmd: "/tmp/dotnet-install.sh --version latest --install-dir {{ dotnet.install_dir }}"
-        creates: "{{ dotnet.install_dir }}/dotnet"
-    - name: Link dotnet binary to /usr/local/bin/
-      ansible.builtin.file:
-        src: "{{ dotnet.install_dir }}/dotnet"
-        dest: /usr/local/bin/dotnet
-        state: link
-    - name: Set DOTNET_ROOT env var for all users
-      ansible.builtin.copy:
-        dest: /etc/profile.d/dotnet.sh
-        content: |
-          export DOTNET_ROOT='{{ dotnet.install_dir }}'
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Create git-credential-manager install directory
-      ansible.builtin.file:
-        path: "{{ gcm.install_dir }}"
-        state: directory
-        mode: '0755'
-    - name: Install latest version of git-credential-manager
-      ansible.builtin.command:
-        cmd: "{{ dotnet.install_dir }}/dotnet tool install --tool-path {{ gcm.install_dir }} git-credential-manager"
-        creates: "{{ gcm.install_dir }}/git-credential-manager"
+  ansible.builtin.file:
+    path: "{{ legacy_dotnet_root }}{{ item }}"
+    state: absent
+  loop:
+    - /usr/local/bin/git-credential-manager
+    - /usr/local/bin/.store
+    - /usr/local/bin/dotnet
+    - /usr/local/share/dotnet
+    - /etc/profile.d/dotnet.sh
 
 - name: Get foreign dpkg architectures
   ansible.builtin.command: dpkg --print-foreign-architectures
@@ -244,8 +212,6 @@
       ansible.builtin.apt:
         deb: "/tmp/{{ common_ghostty_deb }}"
 
-# Nix is a system install (needs root), so do it here rather than let the
-# dotfiles installer prompt for sudo as the user.
 - name: Install Firefox add-ons by policy
   tags:
     - firefox
@@ -281,6 +247,8 @@
              | to_nice_json }}
         mode: "0644"
 
+# Nix is a system install (needs root), so do it here rather than let the
+# dotfiles installer prompt for sudo as the user.
 - name: Install Nix (Determinate installer)
   tags:
     - nix

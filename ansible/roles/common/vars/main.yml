@@ -12,6 +12,9 @@ firefox_extensions:
 firefox_distribution_policies: /usr/lib/firefox-esr/distribution/policies.json
 firefox_policies_dir: /etc/firefox/policies
 
+# Prefix for the old .NET install paths; tests point it at a temp dir.
+legacy_dotnet_root: ""
+
 sshkey_touchfile: /etc/ssh/sshkeys-regenerated
 
 # Mount point of the host's shared folder; keep in step with /fstab.
@@ -36,19 +39,6 @@ ghostty:
 nix:
   installer_url: https://install.determinate.systems/nix
   daemon_profile: /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-
-dotnet:
-  install_dir: /usr/local/share/dotnet
-  # Runtime deps for .NET on Debian. Use unversioned -dev names: the runtime
-  # libs get renamed (libicu76 -> libicu78, libssl3 -> libssl3t64) and break
-  # this list. Essential libs (libc6, libgcc-s1, libstdc++6) are always present.
-  # https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian#dependencies
-  deps:
-    - ca-certificates
-    - libgssapi-krb5-2
-    - libicu-dev
-    - libssl-dev
-    - zlib1g
 
 apt:
   pre_install: # required to add new apt repos/signing keys
@@ -112,9 +102,6 @@ apt:
 
 go:
   version_url: https://go.dev/dl/?mode=json
-
-gcm: # git-credential-manager
-  install_dir: /usr/local/bin
 
 vscode:
   extensions:
