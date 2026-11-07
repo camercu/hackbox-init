@@ -8,3 +8,6 @@ skip_list:
   # per-role `apt`/`pip` vars share one shape. A `common_` prefix would
   # mislabel them.
   - var-naming[no-role-prefix]
+# Untracked working state (see .git/info/exclude).
+exclude_paths:
+  - .scratch/
