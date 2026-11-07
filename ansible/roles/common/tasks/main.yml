@@ -246,6 +246,8 @@
       check_mode: false
 
     # The installer exits 2 when the new modules load only after a reboot.
+    # --nox11: without a TTY but with DISPLAY set (bootstrap run from a desktop
+    # terminal), makeself chmods itself on the read-only ISO and spawns xterm.
     - name: Run the Guest Additions installer
       when: common_vbox_device.rc == 0
       vars:
@@ -260,7 +262,7 @@
           trap 'umount "$iso"; rmdir "$iso"' EXIT
           mount -o loop,ro /usr/share/virtualbox/VBoxGuestAdditions.iso "$iso"
           rc=0
-          sh "$iso/{{ common_vbox_run }}" || rc=$?
+          sh "$iso/{{ common_vbox_run }}" --nox11 || rc=$?
           [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ]
         creates: "/opt/VBoxGuestAdditions-{{ common_vbox_version }}"
       notify: Rebooting machine
