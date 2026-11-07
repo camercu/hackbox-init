@@ -1,9 +1,16 @@
 ---
-firefox:
-  extensions:
-    - https://addons.mozilla.org/firefox/downloads/file/3616824/foxyproxy_standard-7.5.1-an+fx.xpi # FoxyProxy Standard
-    - https://addons.mozilla.org/firefox/downloads/file/3343599/cookie_quick_manager-0.5rc2-an+fx.xpi # Cookie quick manager
-    - https://addons.mozilla.org/firefox/downloads/file/3769639/user_agent_switcher_and_manager-0.4.7.1-an+fx.xpi # User-Agent switcher
+# Firefox add-ons, installed by policy for every profile and kept current
+# from AMO. Key: the add-on id (about:support, Add-ons). Value: its AMO slug
+# (the addons.mozilla.org/firefox/addon/<slug>/ part of its page URL).
+firefox_extensions:
+  uBlock0@raymondhill.net: ublock-origin
+  jid1-MnnxcxisBPnSXQ@jetpack: privacy-badger17
+  foxyproxy@eric.h.jung: foxyproxy-standard
+# Kali ships its policies here (kali-defaults-desktop). Firefox reads only one
+# policies file, and the one in firefox_policies_dir wins, so Kali's are
+# merged into it.
+firefox_distribution_policies: /usr/lib/firefox-esr/distribution/policies.json
+firefox_policies_dir: /etc/firefox/policies
 
 sshkey_touchfile: /etc/ssh/sshkeys-regenerated
 

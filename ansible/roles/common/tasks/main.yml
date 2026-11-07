@@ -246,6 +246,41 @@
 
 # Nix is a system install (needs root), so do it here rather than let the
 # dotfiles installer prompt for sudo as the user.
+- name: Install Firefox add-ons by policy
+  tags:
+    - firefox
+  block:
+    - name: Read Kali's Firefox policies
+      ansible.builtin.slurp:
+        src: "{{ firefox_distribution_policies }}"
+      register: common_kali_policies
+      failed_when: false
+
+    - name: Create Firefox policies directory
+      ansible.builtin.file:
+        path: "{{ firefox_policies_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write Firefox policies with add-ons
+      vars:
+        common_kali: >-
+          {{ (common_kali_policies.content | default('e30=') | b64decode
+              | from_json).policies | default({}) }}
+        common_extensions: >-
+          {% set out = {} %}{% for id, slug in firefox_extensions.items() %}{%
+            set _ = out.update({id: {
+              'installation_mode': 'normal_installed',
+              'install_url': 'https://addons.mozilla.org/firefox/downloads/latest/'
+                ~ slug ~ '/latest.xpi'}}) %}{% endfor %}{{ out }}
+      ansible.builtin.copy:
+        dest: "{{ firefox_policies_dir }}/policies.json"
+        content: >-
+          {{ {'policies': common_kali | combine(
+               {'ExtensionSettings': common_extensions}, recursive=True)}
+             | to_nice_json }}
+        mode: "0644"
+
 - name: Install Nix (Determinate installer)
   tags:
     - nix
