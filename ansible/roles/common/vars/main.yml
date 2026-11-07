@@ -50,55 +50,40 @@ apt:
     - gpg # free PGP replacement
     - software-properties-common # repo manager
 
+  # CLI tools the dotfiles call (bat, delta, fzf, lsd, neovim, ripgrep,
+  # tmux, ...) come from Home Manager in the dotfiles.
   install:
-    - ansible # config managment tool
-    - bat # cat alternative
     - build-essential # C compiling tools
     - code # VSCode
     - docker-doc # docker documentation
     - docker.io # docker containers
     - dos2unix # fix line endings
-    - git-delta # diff viewer
-    - entr # run arbitrary commands on file change
-    - fd-find # blazing-fast replacement for find command (in Rust)
     - flameshot # screenshot tool
-    - fzf # dependency for custom hashcat mode finder
     - gdb # GNU Debugger
     - git # version control
-    - jq # JSON query tool for cli
-    - lazygit # easy TUI for git
-    - lsd # better version of `ls`
     - make # code build tool
     - ncat # better netcat, with ssl support
-    - neovim # best CLI text editor
     - nmap # autorecon dependency
     - openresolv # required for wireguard
     - openvpn # most common VPN for connecting to hacking sites
     - 7zip # 7zip compression tools (replaces p7zip-full)
     - perl # scripting language
     - pipx # python executable installer
-    - procs # ps alternative
     - python3-dev # pwntools dependency
     - python3-pefile # Windows PE (exe) parser
     - python3-pip # python package manager
     - python3-scapy # custom packet crafting
     - python3-setuptools # for building/installing python packages
     - python3-venv # python virtual environments
-    - ripgrep # blazing-fast replacement for grep (written in Rust)
     - rsync # faster way to scp files, only syncing changes
     - stow # GNU stow for managing dotfile install
     - tcpdump # command line packet capture
-    - tealdeer # tldr replacement
-    - terminator # best terminal emulator
-    - tmux # terminal multiplexer
     - tree # view file tree in cmdline
-    - tree-sitter-cli # language parsers for Neovim
     - vim # great CLI text editor
     - wget # http requests
     - wireguard # fastest VPN tunnel
     - wireshark # packet capture
     - xclip # X-clipboard commandline tool
-    - xh # better curl alternative
     - xxd # hexdump tool
     - zsh # better shell
 
