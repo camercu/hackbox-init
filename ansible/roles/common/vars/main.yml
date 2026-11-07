@@ -14,6 +14,18 @@ dotfiles:
   dir: "{{ homedir }}/.dotfiles"
   repo: "https://github.com/camercu/dotfiles"
 
+# Ghostty for Kali: a community .deb (github.com/mkasberg/ghostty-ubuntu)
+# built for Debian forky, which Kali rolling tracks. That project's
+# install.sh rejects Kali 2026, so download the asset directly. To bump: take
+# the new release tag, asset version and per-arch sha256 digests from
+# https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest
+ghostty:
+  release: 1.3.1-0-ppa2
+  version: 1.3.1-0.ppa2
+  sha256:
+    amd64: d4f9207423ea7957344430a729b52edb13aff620fb27fe69434ed1d8dc80f880
+    arm64: c5591b353cb54431aab015acb5056cc9713b9149ba112ee0e0be6b08699e3bb3
+
 nix:
   installer_url: https://install.determinate.systems/nix
   daemon_profile: /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh

@@ -225,6 +225,25 @@
     - apt
     - update
 
+# A system package, so Ghostty uses the system's GL and shows in the menu.
+# Dotfiles leave it out of the nix profile on Kali hosts (system-ghostty.nix).
+- name: Install Ghostty
+  tags:
+    - ghostty
+    - apt
+  vars:
+    common_ghostty_deb: "ghostty_{{ ghostty.version }}_{{ cpu_arch1 | trim }}_forky.deb"
+  block:
+    - name: "Download Ghostty package: {{ common_ghostty_deb }}"
+      ansible.builtin.get_url:
+        url: "https://github.com/mkasberg/ghostty-ubuntu/releases/download/{{ ghostty.release }}/{{ common_ghostty_deb }}"
+        dest: "/tmp/{{ common_ghostty_deb }}"
+        checksum: "sha256:{{ ghostty.sha256[cpu_arch1 | trim] }}"
+        mode: '0644'
+    - name: Install Ghostty package
+      ansible.builtin.apt:
+        deb: "/tmp/{{ common_ghostty_deb }}"
+
 # Nix is a system install (needs root), so do it here rather than let the
 # dotfiles installer prompt for sudo as the user.
 - name: Install Nix (Determinate installer)
