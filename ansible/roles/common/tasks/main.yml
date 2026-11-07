@@ -1,5 +1,8 @@
 ---
+# Tagged `always`: later tasks in any tag (apt, go, uv, pentest) read these.
 - name: Get (normalized) CPU architecture
+  tags:
+    - always
   set_fact:
     cpu_arch1: >-
       {% if ansible_facts.architecture in ['x86_64', 'amd64'] %}
