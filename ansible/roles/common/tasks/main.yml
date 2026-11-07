@@ -394,28 +394,49 @@
         remote_src: true
       when: latest_go_version.json[0].version != installed_go_version.stdout
 
-- name: Install Rust
+# Rust comes from nix rustup (dotfiles), at the XDG paths the shell sets.
+# Earlier runs installed rustup with its curl installer into ~/.cargo and
+# ~/.rustup; ~/.cargo/bin would shadow nix's. Remove that install only when
+# ~/.cargo/bin holds just rustup's proxies, nothing the user installed.
+- name: Remove the old curl-installed rustup
   become: true
   become_user: "{{ user }}"
   tags:
     - rust
+  vars:
+    common_rustup_proxies:
+      - cargo
+      - cargo-clippy
+      - cargo-fmt
+      - cargo-miri
+      - clippy-driver
+      - rls
+      - rust-analyzer
+      - rust-gdb
+      - rust-gdbgui
+      - rust-lldb
+      - rustc
+      - rustdoc
+      - rustfmt
+      - rustup
   block:
-    - name: "Check if Rust is installed for user {{ user }}"
-      ansible.builtin.stat:
-        path: "{{ homedir }}/.cargo"
-      register: cargo_dir
-    - name: Fetch rustup
-      ansible.builtin.uri:
-        url: https://sh.rustup.rs
-        return_content: true
-      when: not cargo_dir.stat.exists
-      register: rustup_installer
-    - name: Run rustup installer
-      ansible.builtin.command:
-        cmd: sh -s -- -y
-        stdin: "{{ rustup_installer.content }}"
-      changed_when: true # `when` already skips hosts that have ~/.cargo
-      when: not cargo_dir.stat.exists
+    - name: List ~/.cargo/bin
+      ansible.builtin.find:
+        paths: "{{ homedir }}/.cargo/bin"
+        file_type: any
+        hidden: true
+      register: common_cargo_bin
+    - name: Remove ~/.cargo and ~/.rustup
+      ansible.builtin.file:
+        path: "{{ homedir }}/{{ item }}"
+        state: absent
+      loop:
+        - .cargo
+        - .rustup
+      when:
+        - common_cargo_bin.matched > 0
+        - common_cargo_bin.files | map(attribute='path') | map('basename')
+          | difference(common_rustup_proxies) | length == 0
 
 - name: "Install uv (pip replacement)"
   become: true
