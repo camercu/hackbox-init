@@ -304,6 +304,22 @@
         creates: /etc/terminfo/x/xterm-ghostty
         removes: "{{ homedir }}/.nix-profile/share/terminfo/x/xterm-ghostty"
 
+# On VMware, bootstrap.sh mounts the host's vm-share folder. Edit the
+# dotfiles and this repo on the host and see the changes in the VM at once.
+- name: Use the host's shared copies of dotfiles and hackbox-init
+  tags:
+    - dotfiles
+    - vmshare
+  ansible.builtin.include_tasks:
+    file: vm_share_link.yml
+    apply:
+      tags:
+        - dotfiles
+        - vmshare
+  loop:
+    - .dotfiles
+    - hackbox-init
+
 - name: Install latest release of Golang
   tags:
     - go

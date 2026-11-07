@@ -1,0 +1,30 @@
+---
+# Links {{ homedir }}/{{ item }} to the host's copy in {{ vm_share }}, when
+# the host shares one. Included once per item from main.yml.
+- name: "Check for a shared copy: {{ item }}"
+  ansible.builtin.stat:
+    path: "{{ vm_share }}/{{ item }}"
+  register: common_shared_copy
+
+- name: "Link to the shared copy: {{ item }}"
+  when: common_shared_copy.stat.isdir | default(false)
+  become: true
+  become_user: "{{ user }}"
+  block:
+    - name: "Check the local copy: {{ item }}"
+      ansible.builtin.stat:
+        path: "{{ homedir }}/{{ item }}"
+      register: common_local_copy
+    # Never delete a real clone: it may hold unpushed work. If a .pre-share
+    # copy already exists, mv is skipped and the link task below fails
+    # rather than replace a directory.
+    - name: "Move the local copy aside: {{ item }}"
+      ansible.builtin.command:
+        cmd: mv "{{ homedir }}/{{ item }}" "{{ homedir }}/{{ item }}.pre-share"
+        creates: "{{ homedir }}/{{ item }}.pre-share"
+      when: common_local_copy.stat.exists and not common_local_copy.stat.islnk
+    - name: "Point the local copy at the shared one: {{ item }}"
+      ansible.builtin.file:
+        src: "{{ vm_share }}/{{ item }}"
+        dest: "{{ homedir }}/{{ item }}"
+        state: link

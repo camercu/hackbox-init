@@ -7,6 +7,9 @@ firefox:
 
 sshkey_touchfile: /etc/ssh/sshkeys-regenerated
 
+# Mount point of the host's shared folder; keep in step with /fstab.
+vm_share: /mnt/share
+
 dotfiles:
   dir: "{{ homedir }}/.dotfiles"
   repo: "https://github.com/camercu/dotfiles"

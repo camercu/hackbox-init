@@ -74,17 +74,4 @@ apt install -y python3 ansible-core
 info "Running Ansible script..."
 ansible-playbook -v -i localhost, --connection=local -e "ansible_python_interpreter=$(which python3)" "$HERE/ansible/hackbox-init.yml" "$@"
 
-HOME_DIR="$(getent passwd "${SUDO_USER:-root}" | cut -d: -f6)"
-if [[ "$hypervisor" == vmware && -d /mnt/share/.dotfiles ]]; then
-  info "Swapping out dotfile dir for shared copy..."
-  [[ -d "$HOME_DIR/.dotfiles" && ! -L "$HOME_DIR/.dotfiles" ]] && rm -rf "$HOME_DIR/.dotfiles"
-  ln -sf /mnt/share/.dotfiles "$HOME_DIR/.dotfiles"
-fi
-
-if [[ "$hypervisor" == vmware && -d /mnt/share/hackbox-init ]]; then
-  info "Swapping out hackbox-init dir for shared copy..."
-  [[ -d "$HOME_DIR/hackbox-init" && ! -L "$HOME_DIR/hackbox-init" ]] && rm -rf "$HOME_DIR/hackbox-init"
-  ln -sf /mnt/share/hackbox-init "$HOME_DIR/hackbox-init"
-fi
-
 success "Done!"
